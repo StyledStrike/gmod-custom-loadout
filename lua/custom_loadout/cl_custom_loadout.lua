@@ -239,7 +239,7 @@ function CLoadout:UpdateLoadoutList()
 			local imgPreferred = vgui.Create('DImage', item)
 			imgPreferred:SetPos(8, 8)
 			imgPreferred:SetSize(24, 24)
-			imgPreferred:SetImage('icon16/award_star_gold_3.png')
+			imgPreferred:SetImage('icon16/star.png')
 			imgPreferred:SetTooltip('This is your preferred weapon')
 		end
 	end
