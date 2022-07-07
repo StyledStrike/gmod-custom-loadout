@@ -330,7 +330,7 @@ function CLoadout:ShowPanel()
 	local lblLoadout = vgui.Create('DLabel', rPanel)
 	lblLoadout:SetText('Your loadout')
 	lblLoadout:SetFont('Trebuchet24')
-	lblLoadout:SetTextColor(Color(193, 202, 255))
+	lblLoadout:SetTextColor(Color(193, 202, 255, 255))
 	lblLoadout:Dock(TOP)
 	lblLoadout:DockMargin(4, 2, 0, 2)
 
