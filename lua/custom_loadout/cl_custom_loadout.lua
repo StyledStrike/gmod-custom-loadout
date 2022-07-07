@@ -195,7 +195,7 @@ function CLoadout:UpdateAvailableList()
 			local imgRestricted = vgui.Create('DImage', item)
 			imgRestricted:Dock(FILL)
 			imgRestricted:DockMargin(16, 16, 16, 16)
-			imgRestricted:SetImage('icon16/cross.png')
+			imgRestricted:SetMaterial(Material('icon16/cross.png', 'smooth mips'))
 			imgRestricted:SetTooltip('This weapon is not available to you')
 		end
 	end
@@ -239,7 +239,7 @@ function CLoadout:UpdateLoadoutList()
 			local imgPreferred = vgui.Create('DImage', item)
 			imgPreferred:SetPos(8, 8)
 			imgPreferred:SetSize(24, 24)
-			imgPreferred:SetImage('icon16/star.png')
+			imgPreferred:SetMaterial(Material('icon16/star.png', 'smooth mips'))
 			imgPreferred:SetTooltip('This is your preferred weapon')
 		end
 	end
