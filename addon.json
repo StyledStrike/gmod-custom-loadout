@@ -1,0 +1,12 @@
+{
+	"title": "Custom Loadout",
+	"type": "weapon",
+	"tags":	["roleplay", "fun"],
+	"ignore": [
+		".git*",
+		"*.txt",
+		"*.md",
+		"glualint.json",
+		"LICENSE"
+	]
+}
