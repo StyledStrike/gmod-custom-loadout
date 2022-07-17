@@ -6,7 +6,7 @@
 CLoadout = {}
 
 function CLoadout.PrintF(str, ...)
-	MsgC(Color(255, 94, 0), '[Custom Chat] ', Color(255,255,255), string.format(str, ...), '\n')
+	MsgC(Color(255, 94, 0), '[Custom Loadout] ', Color(255,255,255), string.format(str, ...), '\n')
 end
 
 function CLoadout:IsBlacklisted(ply, class)

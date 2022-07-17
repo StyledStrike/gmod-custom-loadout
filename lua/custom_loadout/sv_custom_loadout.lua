@@ -45,7 +45,7 @@ function CLoadout:GiveAmmoToAllWeapons(ply)
 end
 
 function CLoadout:GiveWeapons(ply)
-	if not IsValid(ply) or not ply:Alive() then return end
+	if not IsValid(ply) or ply:Health() <= 0 then return end
 
 	ply:StripWeapons()
 
