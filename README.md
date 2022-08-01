@@ -2,7 +2,7 @@
 A loadout customization addon for Garry's Mod.
 [Visit the workshop page here.](https://steamcommunity.com/sharedfiles/filedetails/?id=2675972006)
 
-![Screenshot](https://i.imgur.com/xOT1vVf.png)
+![Screenshot](https://i.imgur.com/ollKlWR.png)
 
 ### Features
 
