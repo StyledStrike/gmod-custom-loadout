@@ -371,6 +371,33 @@ function CLoadout:ShowPanel()
 	pnlLoadoutOptions:DockPadding(2, 2, 2, 2)
 	pnlLoadoutOptions:SetPaintBackground(false)
 
+	local btnRename = vgui.Create('DButton', pnlLoadoutOptions)
+	btnRename:SetText('')
+	btnRename:SetImage('icon16/brick_edit.png')
+	btnRename:SetTooltip('Rename loadout')
+	btnRename:SetWide(24)
+	btnRename:Dock(RIGHT)
+
+	btnRename.DoClick = function()
+		local loadoutName = self.loadouts[self.loadoutIndex].name
+
+		Derma_StringRequest('Rename Loadout', 'Give a new name to "' .. loadoutName .. '"', loadoutName, function(name)
+			name = string.Trim(name)
+
+			if string.len(name) == 0 then
+				Derma_Message('The loadout name cannot be empty.', 'Invalid name', 'OK')
+
+			elseif self:FindLoadoutByName(name) then
+				Derma_Message('"' .. name .. '" already exists. Please choose another one.', 'Invalid name', 'OK')
+
+			else
+				self.loadouts[self.loadoutIndex].name = name
+				self:UpdateLists()
+				self:Save()
+			end
+		end, nil, 'Rename')
+	end
+
 	local btnRemove = vgui.Create('DButton', pnlLoadoutOptions)
 	btnRemove:SetText('')
 	btnRemove:SetImage('icon16/delete.png')
