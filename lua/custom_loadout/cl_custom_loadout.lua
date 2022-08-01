@@ -1,13 +1,3 @@
--- search filter
-CLoadout.filter = ''
-
--- data to send to the server
-CLoadout.enabled = false
-CLoadout.preferred = ''
-CLoadout.items = {}
-CLoadout.ammo1 = 5000
-CLoadout.ammo2 = 5
-
 -- weapons that cant be automatically listed by code
 local weaponsList = {
 	['weapon_crowbar'] = {name = 'Crowbar'},
@@ -55,19 +45,47 @@ function CLoadout:GetAmmoLimits()
 		cvarLimitSecondary and cvarLimitSecondary:GetInt() or 5
 end
 
+function CLoadout:FindLoadoutByName(name)
+	for k, v in ipairs(self.loadouts) do
+		if v.name == name then return k end
+	end
+end
+
+function CLoadout:CreateLoadout(name, items, preferred)
+	return table.insert(self.loadouts, {
+		name = isstring(name) and name or 'My Loadout',
+		preferred = isstring(preferred) and preferred or '',
+		items = (istable(items) and table.IsSequential(items)) and items or {}
+	})
+end
+
+function CLoadout:DeleteLoadout(index)
+	table.remove(self.loadouts, index)
+
+	if #self.loadouts == 0 then
+		self:CreateLoadout()
+	end
+
+	self.loadoutIndex = #self.loadouts
+	self:UpdateLists()
+end
+
 function CLoadout:Apply()
 	local data = { enabled = false }
 
 	if self.enabled then
+		local loadout = self.loadouts[self.loadoutIndex]
+
 		data.enabled = true
-		data.preferred = self.preferred
-		data.items = self.items
+		data.items = loadout.items
+		data.preferred = loadout.preferred
 
 		data.ammo1 = self.ammo1
 		data.ammo2 = self.ammo2
 	end
 
 	data = util.Compress( util.TableToJSON(data) )
+
 	if not data then
 		CLoadout.PrintF('Failed to compress the loadout data!')
 
@@ -82,8 +100,8 @@ end
 function CLoadout:Save()
 	file.Write('sanct_loadout.txt', util.TableToJSON({
 		enabled = self.enabled,
-		preferred = self.preferred,
-		items = self.items,
+		loadouts = self.loadouts,
+		loadoutIndex = self.loadoutIndex,
 
 		ammo1 = self.ammo1,
 		ammo2 = self.ammo2
@@ -91,14 +109,16 @@ function CLoadout:Save()
 end
 
 function CLoadout:AddWeapon(class)
-	table.insert(self.items, class)
+	table.insert(self.loadouts[self.loadoutIndex].items, class)
 	self:UpdateLists()
 end
 
 function CLoadout:RemoveWeapon(class)
-	for k, v in ipairs(self.items) do
+	local items = self.loadouts[self.loadoutIndex].items
+
+	for k, v in ipairs(items) do
 		if v == class then
-			table.remove(self.items, k)
+			table.remove(items, k)
 			break
 		end
 	end
@@ -117,7 +137,7 @@ function CLoadout:GetWeaponIcon(class)
 end
 
 function CLoadout:PreferWeapon(class)
-	self.preferred = class
+	self.loadouts[self.loadoutIndex].preferred = class
 	self:UpdateLoadoutList()
 	self:Save()
 end
@@ -151,9 +171,11 @@ function CLoadout:UpdateAvailableList()
 		v:Remove()
 	end
 
+	local existingItems = self.loadouts[self.loadoutIndex].items
+
 	for k, v in SortedPairsByMemberValue(weaponsList, 'name') do
 		-- dont list weapons that are on the loadout already
-		if table.HasValue(self.items, k) then continue end
+		if table.HasValue(existingItems, k) then continue end
 
 		-- dont list weapons that dont match the search filter
 		if self.filter ~= '' then
@@ -207,11 +229,27 @@ end
 
 -- updates the list of weapons on the loadout
 function CLoadout:UpdateLoadoutList()
+	-- make sure we dont call the "OnSelect" callback
+	-- while doing this (to prevent infinite loops)
+	self.comboLoadouts._BlockSelectCallback = true
+	self.comboLoadouts:Clear()
+
+	-- update the loadout selection box
+	for k, v in ipairs(self.loadouts) do
+		self.comboLoadouts:AddChoice(v.name, nil, k == self.loadoutIndex)
+	end
+
+	self.comboLoadouts._BlockSelectCallback = nil
+
+	-- update the items list
 	for _, v in ipairs(self.listLoadout:GetChildren()) do
 		v:Remove()
 	end
 
-	for _, v in ipairs(self.items) do
+	local items = self.loadouts[self.loadoutIndex].items
+	local preferred = self.loadouts[self.loadoutIndex].preferred
+
+	for _, v in ipairs(items) do
 		if not weaponsList[v] then continue end
 
 		local item = self.listLoadout:Add('ContentIcon')
@@ -232,10 +270,10 @@ function CLoadout:UpdateLoadoutList()
 		end
 
 		item.OpenMenu = function()
-			CLoadout:ShowWeaponOptions(v, self.preferred ~= v)
+			CLoadout:ShowWeaponOptions(v, preferred ~= v)
 		end
 
-		if self.preferred == v then
+		if preferred == v then
 			local imgPreferred = vgui.Create('DImage', item)
 			imgPreferred:SetPos(8, 8)
 			imgPreferred:SetSize(24, 24)
@@ -300,7 +338,7 @@ function CLoadout:ShowPanel()
 	local lblAvailable = vgui.Create('DLabel', lPanel)
 	lblAvailable:SetText('Available weapons')
 	lblAvailable:SetFont('Trebuchet24')
-	lblAvailable:SetTextColor(Color(150, 255, 150, 255))
+	lblAvailable:SetTextColor(Color(150, 255, 150))
 	lblAvailable:Dock(TOP)
 	lblAvailable:DockMargin(4, 2, 0, 2)
 
@@ -327,12 +365,71 @@ function CLoadout:ShowPanel()
 
 	----- RIGHT PANEL STUFF
 
-	local lblLoadout = vgui.Create('DLabel', rPanel)
-	lblLoadout:SetText('Your loadout')
-	lblLoadout:SetFont('Trebuchet24')
-	lblLoadout:SetTextColor(Color(193, 202, 255, 255))
-	lblLoadout:Dock(TOP)
-	lblLoadout:DockMargin(4, 2, 0, 2)
+	local pnlLoadoutOptions = vgui.Create('DPanel', rPanel)
+	pnlLoadoutOptions:SetTall(32)
+	pnlLoadoutOptions:Dock(TOP)
+	pnlLoadoutOptions:DockPadding(2, 2, 2, 2)
+	pnlLoadoutOptions:SetPaintBackground(false)
+
+	local btnRemove = vgui.Create('DButton', pnlLoadoutOptions)
+	btnRemove:SetText('')
+	btnRemove:SetImage('icon16/bullet_delete.png')
+	btnRemove:SetTooltip('Remove loadout')
+	btnRemove:SetWide(24)
+	btnRemove:Dock(RIGHT)
+
+	btnRemove.DoClick = function()
+		local loadoutName = self.loadouts[self.loadoutIndex].name
+
+		Derma_Query('Are you sure you want to delete "' .. loadoutName .. '"?', 'Delete loadout', 'Yes', function()
+			self:DeleteLoadout(self.loadoutIndex)
+			self:Save()
+		end, 'No')
+	end
+
+	local btnNew = vgui.Create('DButton', pnlLoadoutOptions)
+	btnNew:SetText('')
+	btnNew:SetImage('icon16/bullet_add.png')
+	btnNew:SetTooltip('Create a new loadout')
+	btnNew:SetWide(24)
+	btnNew:Dock(RIGHT)
+
+	btnNew.DoClick = function()
+		-- ask for a name for the new loadout
+		Derma_StringRequest('Create Loadout', 'Give a name to your new loadout', '', function(name)
+			name = string.Trim(name)
+
+			if string.len(name) == 0 then
+				Derma_Message('The loadout name cannot be empty.', 'Invalid name', 'OK')
+
+			elseif self:FindLoadoutByName(name) then
+				Derma_Message('"' .. name .. '" already exists. Please choose another one.', 'Invalid name', 'OK')
+
+			else
+				self.loadoutIndex = self:CreateLoadout(name)
+				self:UpdateLists()
+				self:Save()
+			end
+		end, nil, 'Create')
+	end
+
+	self.comboLoadouts = vgui.Create('DComboBox', pnlLoadoutOptions)
+	self.comboLoadouts:SetFont('Trebuchet24')
+	self.comboLoadouts:SetSortItems(false)
+	self.comboLoadouts:Dock(FILL)
+	self.comboLoadouts:SetTextColor(Color(193, 202, 255))
+
+	self.comboLoadouts.Paint = function(_, sw, sh)
+		surface.SetDrawColor(0, 0, 0, 240)
+		surface.DrawRect(0, 0, sw, sh)
+	end
+
+	self.comboLoadouts.OnSelect = function(s, index)
+		if s._BlockSelectCallback then return end
+
+		self.loadoutIndex = index
+		self:UpdateLists()
+	end
 
 	local pnlOptions = vgui.Create('DPanel', rPanel)
 	pnlOptions:SetTall(114)
@@ -355,7 +452,6 @@ function CLoadout:ShowPanel()
 
 	checkEnable.DoClick = function()
 		self.enabled = not self.enabled
-		self:Apply()
 	end
 
 	checkEnable.Paint = function(s, sw, sh)
@@ -426,42 +522,23 @@ function CLoadout:ShowPanel()
 end
 
 function CLoadout:Init()
+	-- search filter
+	self.filter = ''
+
+	-- settings
+	self.enabled = false
+	self.loadoutIndex = 1
+	self.loadouts = {}
+	self.ammo1 = 5000
+	self.ammo2 = 50
+
 	if IsValid(self.frame) then
 		self.frame:Close()
 		self.frame = nil
 	end
 
-	-- load settings
-	if file.Exists('sanct_loadout.txt', 'DATA') then
-		local data = util.JSONToTable( file.Read('sanct_loadout.txt', 'DATA') )
-		if data then
-			local maxAmmo1, maxAmmo2 = self:GetAmmoLimits()
-
-			if data.enabled then
-				self.enabled = true
-			end
-
-			if istable(data.items) and table.IsSequential(data.items) then
-				self.items = data.items
-			end
-
-			if isnumber(data.ammo1) then
-				self.ammo1 = math.Clamp(data.ammo1, 0, maxAmmo1)
-			end
-
-			if isnumber(data.ammo2) then
-				self.ammo2 = math.Clamp(data.ammo2, 0, maxAmmo2)
-			end
-
-			if isstring(data.preferred) then
-				self.preferred = data.preferred
-			end
-		end
-	end
-
-	-- add all weapons in the game registry
+	-- add scripted weapons (aka SWEPs)
 	-- (note: "engine" weapons arent listed here)
-
 	for _, v in pairs(weapons.GetList()) do
 		if not v.ClassName then continue end
 		if not v.Spawnable then continue end
@@ -473,6 +550,41 @@ function CLoadout:Init()
 			adminOnly = v.AdminOnly,
 			name = (v.PrintName and v.PrintName ~= '') and v.PrintName or v.ClassName
 		}
+	end
+
+	-- load settings
+	if file.Exists('sanct_loadout.txt', 'DATA') then
+		local data = util.JSONToTable( file.Read('sanct_loadout.txt', 'DATA') )
+		if data then
+			if data.enabled then
+				self.enabled = true
+			end
+
+			local maxAmmo1, maxAmmo2 = self:GetAmmoLimits()
+
+			if isnumber(data.ammo1) then
+				self.ammo1 = math.Clamp(data.ammo1, 0, maxAmmo1)
+			end
+
+			if isnumber(data.ammo2) then
+				self.ammo2 = math.Clamp(data.ammo2, 0, maxAmmo2)
+			end
+
+			if istable(data.loadouts) and table.IsSequential(data.loadouts) then
+				for _, v in ipairs(data.loadouts) do
+					self:CreateLoadout(v.name, v.items, v.preferred)
+				end
+			end
+
+			-- backwards compatibility
+			if istable(data.items) and table.IsSequential(data.items) then
+				self:CreateLoadout(nil, data.items, data.preferred)
+			end
+		end
+	end
+
+	if #self.loadouts == 0 then
+		self:CreateLoadout()
 	end
 
 	self:Apply()
