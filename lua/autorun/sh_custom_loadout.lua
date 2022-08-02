@@ -26,12 +26,6 @@ function CLoadout:IsBlacklisted(ply, class)
 	return false
 end
 
-if engine.ActiveGamemode() ~= 'sandbox' then
-	CLoadout.PrintF('Not in sandbox, disabling...')
-
-	return
-end
-
 if SERVER then
 	include('custom_loadout/sv_custom_loadout.lua')
 	AddCSLuaFile('custom_loadout/cl_custom_loadout.lua')
