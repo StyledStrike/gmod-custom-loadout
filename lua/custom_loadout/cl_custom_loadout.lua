@@ -171,7 +171,7 @@ function CLoadout:UpdateAvailableList()
 		v:Remove()
 	end
 
-	local existingItems = self.loadouts[self.loadoutIndex].items
+	local existingItems = self.loadouts[self.loadoutIndex].items or {}
 
 	for k, v in SortedPairsByMemberValue(weaponsList, 'name') do
 		-- dont list weapons that are on the loadout already
@@ -246,7 +246,7 @@ function CLoadout:UpdateLoadoutList()
 		v:Remove()
 	end
 
-	local items = self.loadouts[self.loadoutIndex].items
+	local items = self.loadouts[self.loadoutIndex].items or {}
 	local preferred = self.loadouts[self.loadoutIndex].preferred
 
 	for _, v in ipairs(items) do
@@ -454,7 +454,8 @@ function CLoadout:ShowPanel()
 	self.comboLoadouts.OnSelect = function(s, index)
 		if s._BlockSelectCallback then return end
 
-		self.loadoutIndex = index
+		-- wtf, sometimes OnSelect's "index" is a string
+		self.loadoutIndex = tonumber(index)
 		self:UpdateLists()
 	end
 
