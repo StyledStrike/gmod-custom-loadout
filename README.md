@@ -8,14 +8,13 @@ A loadout customization addon for Garry's Mod.
 
 * Search weapons by name
 * Gives ammo to all weapons
-* Loadout are saved
 * Supports [URS](https://steamcommunity.com/sharedfiles/filedetails/?id=112423325)
 * Supports [WUMA](https://steamcommunity.com/sharedfiles/filedetails/?id=1117436840)
 * Supports [Builder-X](https://www.gmodstore.com/market/view/builder-x)
 * Server owners can set _global_ ammo limits with `custom_loadout_primary_limit` and `custom_loadout_secondary_limit`
 * You can choose which weapon you prefer to hold when the loadout is applied
 
-![Weapon preference](https://i.imgur.com/nWLbhs6.png)
+![Weapon preference](https://i.imgur.com/tHmpiGr.png)
 
 ### Developer Notes
 

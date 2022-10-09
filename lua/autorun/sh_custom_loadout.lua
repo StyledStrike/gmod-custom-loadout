@@ -27,10 +27,13 @@ function CLoadout:IsBlacklisted(ply, class)
 end
 
 if SERVER then
-	include('custom_loadout/sv_custom_loadout.lua')
-	AddCSLuaFile('custom_loadout/cl_custom_loadout.lua')
+	include('custom_loadout/sv_main.lua')
+
+	AddCSLuaFile('custom_loadout/cl_main.lua')
+	AddCSLuaFile('custom_loadout/cl_ui.lua')
 end
 
 if CLIENT then
-	include('custom_loadout/cl_custom_loadout.lua')
+	include('custom_loadout/cl_main.lua')
+	include('custom_loadout/cl_ui.lua')
 end
