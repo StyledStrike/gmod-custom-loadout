@@ -41,7 +41,7 @@ function CLoadout:ShowWeaponOptions(class, can_prefer, index)
 		pnl_ammo:DockPadding(8, -4, -22, 0)
 
 		local slid_ammo = vgui.Create('DNumSlider', pnl_ammo)
-		slid_ammo:SetMin(1)
+		slid_ammo:SetMin(0)
 		slid_ammo:SetMax(max)
 		slid_ammo:SetDecimals(0)
 		slid_ammo:SetDefaultValue(16)
