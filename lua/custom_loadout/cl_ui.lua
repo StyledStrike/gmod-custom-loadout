@@ -233,39 +233,27 @@ function CLoadout:ShowPanel()
 		return
 	end
 
+	local frame_w = math.max(ScrW() * 0.6, 820)
+	local frame_h = math.max(ScrH() * 0.6, 500)
+
+	frame_w = math.Clamp(frame_w, 600, ScrW())
+	frame_h = math.Clamp(frame_h, 400, ScrH())
+
 	local frame = vgui.Create('DFrame')
 	frame:SetTitle('Click on any weapon to add/remove it from your loadout.')
 	frame:SetPos(0, 0)
-	frame:SetSize(math.max(ScrW() * 0.6, 830), math.max(ScrH() * 0.6, 500))
+	frame:SetSize(frame_w, frame_h)
 	frame:SetSizable(true)
 	frame:SetDraggable(true)
 	frame:SetDeleteOnClose(true)
 	frame:SetScreenLock(true)
-	frame:SetMinWidth(830)
-	frame:SetMinHeight(500)
+	frame:SetMinWidth(600)
+	frame:SetMinHeight(400)
 	frame:Center()
 	frame:MakePopup()
 
 	frame._maximized = false
 	frame.btnMaxim:SetDisabled(false)
-
-	frame.btnMaxim.DoClick = function()
-		if frame._maximized then
-			frame:SetSize(frame._original_dimensions[1], frame._original_dimensions[2])
-			frame:Center()
-			frame._maximized = false
-			frame._original_dimensions = nil
-		else
-			frame._maximized = true
-			frame._original_dimensions = { frame:GetWide(), frame:GetTall() }
-			frame:SetPos(0, 0)
-			frame:SetSize(ScrW(), ScrH())
-		end
-
-		frame:SetDraggable(not frame._maximized)
-		frame:SetSizable(not frame._maximized)
-	end
-
 	self.frame = frame
 
 	frame.OnClose = function()
@@ -291,7 +279,25 @@ function CLoadout:ShowPanel()
 	div:SetDividerWidth(4)
 	div:SetLeftMin(200)
 	div:SetRightMin(200)
-	div:SetLeftWidth(frame:GetWide() * 0.5)
+	div:SetLeftWidth(frame_w * 0.56)
+
+	frame.btnMaxim.DoClick = function()
+		if frame._maximized then
+			frame:SetSize(frame._original_dimensions[1], frame._original_dimensions[2])
+			frame:Center()
+			frame._maximized = false
+			frame._original_dimensions = nil
+		else
+			frame._maximized = true
+			frame._original_dimensions = { frame:GetWide(), frame:GetTall() }
+			frame:SetPos(0, 0)
+			frame:SetSize(ScrW(), ScrH())
+		end
+
+		frame:SetDraggable(not frame._maximized)
+		frame:SetSizable(not frame._maximized)
+		div:SetLeftWidth(frame:GetWide() * 0.56)
+	end
 
 	----- LEFT PANEL STUFF
 
@@ -423,7 +429,7 @@ function CLoadout:ShowPanel()
 	end
 
 	local panel_toggle = vgui.Create('DPanel', right_panel)
-	panel_toggle:SetTall(46)
+	panel_toggle:SetTall(52)
 	panel_toggle:Dock(BOTTOM)
 	panel_toggle:DockPadding(8, 8, 8, 8)
 	panel_toggle._anim_state = self.enabled and 1 or 0
@@ -471,7 +477,8 @@ function CLoadout:ShowPanel()
 		surface.SetDrawColor(0, 150, 0, 255 * panel_toggle._anim_state)
 		surface.DrawRect(x + 2, y + 2, size - 4, size - 4)
 
-		draw.SimpleText('Enable loadout', 'Trebuchet18', x + 22, sh * 0.5, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText('Enable loadout', 'Trebuchet18', x + 22, sh * 0.3, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText('Right-click weapons to change the ammo amout', 'DefaultSmall', x + 22, sh * 0.7, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 
 	-- loadout weapons list
@@ -510,7 +517,7 @@ do
 
 	function WeaponIcon:Init()
 		self:SetPaintBackground(false)
-		self:SetSize(180, 128)
+		self:SetSize(140, 128)
 		self:SetText('')
 		self:SetDoubleClickingEnabled(false)
 
