@@ -478,7 +478,7 @@ function CLoadout:ShowPanel()
 		surface.DrawRect(x + 2, y + 2, size - 4, size - 4)
 
 		draw.SimpleText('Enable loadout', 'Trebuchet18', x + 22, sh * 0.3, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.SimpleText('Right-click weapons to change the ammo amout', 'DefaultSmall', x + 22, sh * 0.7, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText('Right-click weapons to change the ammo', 'DefaultSmall', x + 22, sh * 0.7, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 
 	-- loadout weapons list
