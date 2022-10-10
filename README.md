@@ -2,7 +2,7 @@
 A loadout customization addon for Garry's Mod.
 [Visit the workshop page here.](https://steamcommunity.com/sharedfiles/filedetails/?id=2675972006)
 
-![Screenshot](https://i.imgur.com/ollKlWR.png)
+![Screenshot](https://i.imgur.com/vZlcuOl.png)
 
 ### Features
 
@@ -13,8 +13,6 @@ A loadout customization addon for Garry's Mod.
 * Supports [Builder-X](https://www.gmodstore.com/market/view/builder-x)
 * Server owners can set _global_ ammo limits with `custom_loadout_primary_limit` and `custom_loadout_secondary_limit`
 * You can choose which weapon you prefer to hold when the loadout is applied
-
-![Weapon preference](https://i.imgur.com/tHmpiGr.png)
 
 ### Developer Notes
 
