@@ -1,42 +1,68 @@
--- weapons that cant be automatically listed by code
-local weapon_registry = {
-	['weapon_crowbar'] = {name = 'Crowbar', no_primary = true, no_secondary = true},
-	['weapon_stunstick'] = {name = 'Stunstick', no_primary = true, no_secondary = true},
-	['weapon_physcannon'] = {name = 'Gravity Gun', no_primary = true, no_secondary = true},
-	['weapon_physgun'] = {name = 'Physics Gun', no_primary = true, no_secondary = true},
-	['weapon_pistol'] = {name = '9mm Pistol', no_secondary = true},
-	['weapon_357'] = {name = '.357 Magnum', no_secondary = true},
-	['weapon_smg1'] = {name = 'SMG'},
-	['weapon_ar2'] = {name = 'Pulse-Rifle'},
-	['weapon_shotgun'] = {name = 'Shotgun', no_secondary = true},
-	['weapon_crossbow'] = {name = 'Crossbow', no_secondary = true},
-	['weapon_frag'] = {name = 'Grenade', no_secondary = true},
-	['weapon_rpg'] = {name = 'RPG', no_secondary = true},
-	['weapon_slam'] = {name = 'S.L.A.M', no_secondary = true},
-	['weapon_bugbait'] = {name = 'Bug Bait', no_primary = true, no_secondary = true},
-	['weapon_alyxgun'] = {name = 'Alyx Gun'},
-	['weapon_annabelle'] = {name = 'Annabelle'}
-}
+function CLoadout:InitRegistry()
+	-- weapons that cant be automatically listed by code
+	local registry = {
+		['weapon_crowbar'] = {name = 'Crowbar', no_primary = true, no_secondary = true},
+		['weapon_stunstick'] = {name = 'Stunstick', no_primary = true, no_secondary = true},
+		['weapon_physcannon'] = {name = 'Gravity Gun', no_primary = true, no_secondary = true},
+		['weapon_physgun'] = {name = 'Physics Gun', no_primary = true, no_secondary = true},
+		['weapon_pistol'] = {name = '9mm Pistol', no_secondary = true},
+		['weapon_357'] = {name = '.357 Magnum', no_secondary = true},
+		['weapon_smg1'] = {name = 'SMG'},
+		['weapon_ar2'] = {name = 'Pulse-Rifle'},
+		['weapon_shotgun'] = {name = 'Shotgun', no_secondary = true},
+		['weapon_crossbow'] = {name = 'Crossbow', no_secondary = true},
+		['weapon_frag'] = {name = 'Grenade', no_secondary = true},
+		['weapon_rpg'] = {name = 'RPG', no_secondary = true},
+		['weapon_slam'] = {name = 'S.L.A.M', no_secondary = true},
+		['weapon_bugbait'] = {name = 'Bug Bait', no_primary = true, no_secondary = true},
+		['weapon_alyxgun'] = {name = 'Alyx Gun'},
+		['weapon_annabelle'] = {name = 'Annabelle'}
+	}
 
--- half life: source (if mounted)
-if IsMounted('hl1') then
-	weapon_registry['weapon_crowbar_hl1'] = {name = 'Crowbar (HL1)', no_primary = true, no_secondary = true}
-	weapon_registry['weapon_glock_hl1'] = {name = 'Glock (HL1)', no_secondary = true}
-	weapon_registry['weapon_egon'] = {name = 'Gluon Gun (HL1)', no_secondary = true}
-	weapon_registry['weapon_gauss'] = {name = 'Tau Cannon (HL1)', no_secondary = true}
-	weapon_registry['weapon_357_hl1'] = {name = '.357 Handgun (HL1)', no_secondary = true}
-	weapon_registry['weapon_mp5_hl1'] = {name = 'MP5 (HL1)'}
-	weapon_registry['weapon_shotgun_hl1'] = {name = 'SPAS-12 (HL1)', no_secondary = true}
-	weapon_registry['weapon_crossbow_hl1'] = {name = 'Crossbow (HL1)', no_secondary = true}
-	weapon_registry['weapon_handgrenade'] = {name = 'Hand Grenade (HL1)', no_secondary = true}
-	weapon_registry['weapon_hornetgun'] = {name = 'Hornet Gun (HL1)'}
-	weapon_registry['weapon_rpg_hl1'] = {name = 'RPG Launcher (HL1)'}
-	weapon_registry['weapon_satchel'] = {name = 'Satchel (HL1)', no_secondary = true}
-	weapon_registry['weapon_snark'] = {name = 'Snarks (HL1)', no_secondary = true}
-	weapon_registry['weapon_tripmine'] = {name = 'Tripmine (HL1)', no_secondary = true}
+	-- half life: source (if mounted)
+	if IsMounted('hl1') then
+		registry['weapon_crowbar_hl1'] = {name = 'Crowbar (HL1)', no_primary = true, no_secondary = true}
+		registry['weapon_glock_hl1'] = {name = 'Glock (HL1)', no_secondary = true}
+		registry['weapon_egon'] = {name = 'Gluon Gun (HL1)', no_secondary = true}
+		registry['weapon_gauss'] = {name = 'Tau Cannon (HL1)', no_secondary = true}
+		registry['weapon_357_hl1'] = {name = '.357 Handgun (HL1)', no_secondary = true}
+		registry['weapon_mp5_hl1'] = {name = 'MP5 (HL1)'}
+		registry['weapon_shotgun_hl1'] = {name = 'SPAS-12 (HL1)', no_secondary = true}
+		registry['weapon_crossbow_hl1'] = {name = 'Crossbow (HL1)', no_secondary = true}
+		registry['weapon_handgrenade'] = {name = 'Hand Grenade (HL1)', no_secondary = true}
+		registry['weapon_hornetgun'] = {name = 'Hornet Gun (HL1)'}
+		registry['weapon_rpg_hl1'] = {name = 'RPG Launcher (HL1)'}
+		registry['weapon_satchel'] = {name = 'Satchel (HL1)', no_secondary = true}
+		registry['weapon_snark'] = {name = 'Snarks (HL1)', no_secondary = true}
+		registry['weapon_tripmine'] = {name = 'Tripmine (HL1)', no_secondary = true}
+	end
+
+	-- add scripted weapons (aka SWEPs) to our registry
+	-- (note: "engine" weapons arent listed here, so
+	-- we had to manually add them at the top of this file)
+	for _, v in pairs(weapons.GetList()) do
+		if not v.ClassName then continue end
+		if not v.Spawnable then continue end
+
+		-- dont list 'base' class weapons
+		if string.find(v.ClassName, '_base', 1, true) then continue end
+
+		registry[v.ClassName] = {
+			admin_only = v.AdminOnly,
+			name = (v.PrintName and v.PrintName ~= '') and v.PrintName or v.ClassName
+		}
+
+		if v.Primary and (v.Primary.ClipSize == -1 or not v.Primary.ClipSize) then
+			registry[v.ClassName].no_primary = true
+		end
+
+		if v.Secondary and (v.Secondary.ClipSize == -1 or not v.Secondary.ClipSize) then
+			registry[v.ClassName].no_secondary = true
+		end
+	end
+
+	self.weapon_registry = registry
 end
-
-CLoadout.weapon_registry = weapon_registry
 
 function CLoadout:GetAmmoLimits()
 	local cvar_primary_limit = GetConVar('custom_loadout_primary_limit')
@@ -155,30 +181,7 @@ function CLoadout:Init()
 		self.frame = nil
 	end
 
-	-- add scripted weapons (aka SWEPs) to our registry
-	-- (note: "engine" weapons arent listed here, so
-	-- we had to manually add them at the top of this file)
-	for _, v in pairs(weapons.GetList()) do
-		if not v.ClassName then continue end
-		if not v.Spawnable then continue end
-
-		-- dont list 'base' class weapons
-		if string.find(v.ClassName, '_base', 1, true) then continue end
-
-		weapon_registry[v.ClassName] = {
-			admin_only = v.AdminOnly,
-			name = (v.PrintName and v.PrintName ~= '') and v.PrintName or v.ClassName
-		}
-
-		if v.Primary and (v.Primary.ClipSize == -1 or not v.Primary.ClipSize) then
-			weapon_registry[v.ClassName].no_primary = true
-		end
-
-		if v.Secondary and (v.Secondary.ClipSize == -1 or not v.Secondary.ClipSize) then
-			weapon_registry[v.ClassName].no_secondary = true
-		end
-	end
-
+	self:InitRegistry()
 	self:Load()
 
 	if #self.loadouts == 0 then
