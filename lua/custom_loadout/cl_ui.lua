@@ -1,3 +1,5 @@
+local langGet = language.GetPhrase
+
 function CLoadout:GetWeaponIcon(class)
 	if file.Exists('materials/entities/' .. class .. '.png', 'GAME') then
 		return 'entities/' .. class .. '.png'
@@ -10,10 +12,10 @@ end
 
 function CLoadout:ShowWeaponOptions(class, can_prefer, index)
 	local menu = DermaMenu()
-	menu:AddOption('Copy to clipboard', function() SetClipboardText(class) end)
+	menu:AddOption(langGet('cloadout.copy_to_clipboard'), function() SetClipboardText(class) end)
 
 	if can_prefer then
-		menu:AddOption('Set as prefered weapon', function()
+		menu:AddOption(langGet('cloadout.set_favorite_weapon'), function()
 			self:PreferWeapon(class)
 		end):SetIcon('icon16/award_star_gold_3.png')
 	end
@@ -59,11 +61,11 @@ function CLoadout:ShowWeaponOptions(class, can_prefer, index)
 	local max_primary, max_secondary = self:GetAmmoLimits()
 
 	if not reg_weapon.no_primary then
-		AddAmmoSlider(2, 'Primary', 'Primary ammo', item[2], max_primary)
+		AddAmmoSlider(2, 'Primary', langGet('cloadout.ammo_primary'), item[2], max_primary)
 	end
 
 	if not reg_weapon.no_secondary then
-		AddAmmoSlider(3, 'Secondary', 'Secondary ammo', item[3], max_secondary)
+		AddAmmoSlider(3, 'Secondary', langGet('cloadout.ammo_secondary'), item[3], max_secondary)
 	end
 
 	menu:Open()
@@ -111,7 +113,7 @@ function CLoadout:UpdateAvailableList()
 
 		if v.blacklisted then
 			icon:SetBlacklisted(true)
-			icon:SetTooltip('This weapon is not available to you')
+			icon:SetTooltip(langGet('cloadout.weapon_unavailable'))
 		end
 
 		if v.admin_only then
@@ -125,10 +127,10 @@ function CLoadout:UpdateAvailableList()
 
 		icon.DoClick = function()
 			if v.admin_only and not local_ply:IsAdmin() then
-				Derma_Message('This weapon is for admins only.', 'Restricted weapon', 'OK')
+				Derma_Message(langGet('cloadout.admin_only'), langGet('cloadout.weapon_restricted'), langGet('cloadout.ok'))
 
 			elseif v.blacklisted then
-				Derma_Message('This weapon is not available to you.', 'Restricted weapon', 'OK')
+				Derma_Message(langGet('cloadout.weapon_unavailable'), langGet('cloadout.weapon_restricted'), langGet('cloadout.ok'))
 
 			else
 				self:AddWeapon(class)
@@ -181,7 +183,7 @@ function CLoadout:UpdateLoadoutList()
 
 		if preferred == class then
 			icon:SetFavorite(true)
-			icon:SetTooltip('This is your preferred weapon')
+			icon:SetTooltip(langGet('cloadout.favorite_weapon'))
 		end
 
 		local reg_weapon = self.weapon_registry[class]
@@ -189,7 +191,7 @@ function CLoadout:UpdateLoadoutList()
 		if not reg_weapon then
 			if not self.tip_missing_weapons then
 				self.tip_missing_weapons = true
-				Derma_Message('This loadout has weapons that are current unavailable.\nMake sure they are installed to use them.', 'Missing weapons', 'OK')
+				Derma_Message(langGet('cloadout.missing_weapons_help'), langGet('cloadout.missing_weapons'), langGet('cloadout.ok'))
 			end
 
 			icon:SetName(class)
@@ -240,7 +242,7 @@ function CLoadout:ShowPanel()
 	frame_h = math.Clamp(frame_h, 400, ScrH())
 
 	local frame = vgui.Create('DFrame')
-	frame:SetTitle('Click on any weapon to add/remove it from your loadout.')
+	frame:SetTitle(langGet('cloadout.hint_usage'))
 	frame:SetPos(0, 0)
 	frame:SetSize(frame_w, frame_h)
 	frame:SetSizable(true)
@@ -302,7 +304,7 @@ function CLoadout:ShowPanel()
 	----- LEFT PANEL STUFF
 
 	local label_avail = vgui.Create('DLabel', left_panel)
-	label_avail:SetText('Available weapons')
+	label_avail:SetText(langGet('cloadout.available_weapons'))
 	label_avail:SetFont('Trebuchet24')
 	label_avail:SetTextColor(Color(150, 255, 150))
 	label_avail:Dock(TOP)
@@ -312,7 +314,7 @@ function CLoadout:ShowPanel()
 	search_entry:SetFont('ChatFont')
 	search_entry:SetMaximumCharCount(64)
 	search_entry:SetTabbingDisabled(true)
-	search_entry:SetPlaceholderText('Search...')
+	search_entry:SetPlaceholderText(langGet('cloadout.search'))
 	search_entry:SetTall(38)
 	search_entry:Dock(BOTTOM)
 
@@ -342,21 +344,22 @@ function CLoadout:ShowPanel()
 	local button_rename = vgui.Create('DButton', panel_options)
 	button_rename:SetText('')
 	button_rename:SetImage('icon16/brick_edit.png')
-	button_rename:SetTooltip('Rename loadout')
+	button_rename:SetTooltip(langGet('cloadout.rename'))
 	button_rename:SetWide(24)
 	button_rename:Dock(RIGHT)
 
 	button_rename.DoClick = function()
 		local loadout_name = self.loadouts[self.loadout_index].name
+		local help_text = string.format(langGet('cloadout.rename_help'), loadout_name)
 
-		Derma_StringRequest('Rename Loadout', 'Give a new name to "' .. loadout_name .. '"', loadout_name, function(name)
+		Derma_StringRequest(langGet('cloadout.rename'), help_text, loadout_name, function(name)
 			name = string.Trim(name)
 
 			if string.len(name) == 0 then
-				Derma_Message('The loadout name cannot be empty.', 'Invalid name', 'OK')
+				Derma_Message(langGet('cloadout.rename_err_empty'), langGet('cloadout.rename_err'), langGet('cloadout.ok'))
 
 			elseif self:FindLoadoutByName(name) then
-				Derma_Message('"' .. name .. '" already exists. Please choose another one.', 'Invalid name', 'OK')
+				Derma_Message(string.format(langGet('cloadout.rename_err_exists'), name), langGet('cloadout.rename_err'), langGet('cloadout.ok'))
 
 			else
 				self.loadouts[self.loadout_index].name = name
@@ -369,43 +372,44 @@ function CLoadout:ShowPanel()
 	local button_remove = vgui.Create('DButton', panel_options)
 	button_remove:SetText('')
 	button_remove:SetImage('icon16/delete.png')
-	button_remove:SetTooltip('Remove loadout')
+	button_remove:SetTooltip(langGet('cloadout.remove'))
 	button_remove:SetWide(24)
 	button_remove:Dock(RIGHT)
 
 	button_remove.DoClick = function()
 		local loadout_name = self.loadouts[self.loadout_index].name
+		local help_text = string.format(langGet('cloadout.remove_confirm'), loadout_name)
 
-		Derma_Query('Are you sure you want to delete "' .. loadout_name .. '"?', 'Delete loadout', 'Yes', function()
+		Derma_Query(help_text, langGet('cloadout.remove'), langGet('cloadout.yes'), function()
 			self:DeleteLoadout(self.loadout_index)
 			self:Save()
-		end, 'No')
+		end, langGet('cloadout.no'))
 	end
 
 	local button_new = vgui.Create('DButton', panel_options)
 	button_new:SetText('')
 	button_new:SetImage('icon16/add.png')
-	button_new:SetTooltip('Create a new loadout')
+	button_new:SetTooltip(langGet('cloadout.new'))
 	button_new:SetWide(24)
 	button_new:Dock(RIGHT)
 
 	button_new.DoClick = function()
 		-- ask for a name for the new loadout
-		Derma_StringRequest('Create Loadout', 'Give a name to your new loadout', '', function(name)
+		Derma_StringRequest(langGet('cloadout.new'), langGet('cloadout.new_help'), '', function(name)
 			name = string.Trim(name)
 
 			if string.len(name) == 0 then
-				Derma_Message('The loadout name cannot be empty.', 'Invalid name', 'OK')
+				Derma_Message(langGet('cloadout.rename_err_empty'), langGet('cloadout.rename_err'), langGet('cloadout.ok'))
 
 			elseif self:FindLoadoutByName(name) then
-				Derma_Message('"' .. name .. '" already exists. Please choose another one.', 'Invalid name', 'OK')
+				Derma_Message(string.format(langGet('cloadout.rename_err_exists'), name), langGet('cloadout.rename_err'), langGet('cloadout.ok'))
 
 			else
 				self.loadout_index = self:CreateLoadout(name)
 				self:Save()
 				self:UpdateLists()
 			end
-		end, nil, 'Create')
+		end, nil, langGet('cloadout.new'))
 	end
 
 	self.combo_loadouts = vgui.Create('DComboBox', panel_options)
@@ -445,6 +449,8 @@ function CLoadout:ShowPanel()
 	check_enable:SetText('')
 	check_enable:Dock(FILL)
 	check_enable._highlight_state = 1
+	check_enable._text = langGet('cloadout.enable')
+	check_enable._help = langGet('cloadout.hint_ammo')
 
 	check_enable.DoClick = function()
 		self.enabled = not self.enabled
@@ -477,8 +483,8 @@ function CLoadout:ShowPanel()
 		surface.SetDrawColor(0, 150, 0, 255 * panel_toggle._anim_state)
 		surface.DrawRect(x + 2, y + 2, size - 4, size - 4)
 
-		draw.SimpleText('Enable loadout', 'Trebuchet18', x + 22, sh * 0.3, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.SimpleText('Right-click weapons to change the ammo', 'DefaultSmall', x + 22, sh * 0.7, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(s._text, 'Trebuchet18', x + 22, sh * 0.3, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(s._help, 'DefaultSmall', x + 22, sh * 0.7, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 
 	-- loadout weapons list
@@ -496,7 +502,7 @@ end
 
 if engine.ActiveGamemode() == 'sandbox' then
 	list.Set('DesktopWindows', 'CLoadoutDesktopIcon', {
-		title = 'Loadout',
+		title = langGet('cloadout.title'),
 		icon = 'entities/weapon_smg1.png',
 		init = function() CLoadout:ShowPanel() end
 	})
