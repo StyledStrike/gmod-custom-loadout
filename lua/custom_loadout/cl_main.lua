@@ -13,7 +13,7 @@ function CLoadout:InitRegistry()
 		['weapon_crossbow'] = {name = 'Crossbow', no_secondary = true},
 		['weapon_frag'] = {name = 'Grenade', no_secondary = true},
 		['weapon_rpg'] = {name = 'RPG', no_secondary = true},
-		['weapon_slam'] = {name = 'S.L.A.M', no_secondary = true},
+		['weapon_slam'] = {name = 'S.L.A.M', no_primary = true},
 		['weapon_bugbait'] = {name = 'Bug Bait', no_primary = true, no_secondary = true},
 		['weapon_alyxgun'] = {name = 'Alyx Gun'},
 		['weapon_annabelle'] = {name = 'Annabelle'}
