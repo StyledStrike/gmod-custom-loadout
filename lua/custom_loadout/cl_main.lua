@@ -52,11 +52,11 @@ function CLoadout:InitRegistry()
 			name = (v.PrintName and v.PrintName ~= '') and v.PrintName or v.ClassName
 		}
 
-		if v.Primary and (v.Primary.ClipSize == -1 or not v.Primary.ClipSize) then
+		if v.Primary and not v.Primary.ClipSize then
 			registry[v.ClassName].no_primary = true
 		end
 
-		if v.Secondary and (v.Secondary.ClipSize == -1 or not v.Secondary.ClipSize) then
+		if v.Secondary and not v.Secondary.ClipSize then
 			registry[v.ClassName].no_secondary = true
 		end
 	end
