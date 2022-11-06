@@ -10,65 +10,97 @@ function CLoadout:GetWeaponIcon(class)
 	end
 end
 
-function CLoadout:ShowWeaponOptions(class, can_prefer, index)
-	local menu = DermaMenu()
-	menu:AddOption(langGet('cloadout.copy_to_clipboard'), function() SetClipboardText(class) end)
+function CLoadout:OpenMenuForIcon(icon, is_preferred)
+	local class = icon.WeaponClass
 
-	if can_prefer then
-		menu:AddOption(langGet('cloadout.set_favorite_weapon'), function()
+	local ammo_frame = vgui.Create('DFrame')
+	ammo_frame:SetSize(500, 168)
+	ammo_frame:SetTitle(icon.WeaponName)
+	ammo_frame:SetDraggable(false)
+	ammo_frame:SetBackgroundBlur(true)
+	ammo_frame:Center()
+	ammo_frame:MakePopup()
+	self.ammo_frame = ammo_frame
+
+	local preview = ammo_frame:Add('CLoadoutWeaponIcon')
+	preview:SetWeaponName(icon.WeaponName)
+	preview:SetWeaponClass(class)
+	preview:SetFavorite(is_preferred)
+	preview:SetEnabled(false)
+	preview:Dock(LEFT)
+
+	local container = ammo_frame:Add('DPanel')
+	container:Dock(FILL)
+	container:DockPadding(8, 8, 8, 8)
+
+	local btn_prefer = container:Add('DButton')
+	btn_prefer:SetIcon('icon16/award_star_gold_3.png')
+	btn_prefer:Dock(TOP)
+
+	if is_preferred then
+		btn_prefer:SetText(langGet('cloadout.favorite_weapon'))
+		btn_prefer:SetEnabled(false)
+	else
+		btn_prefer:SetText(langGet('cloadout.set_favorite_weapon'))
+
+		btn_prefer.DoClick = function()
+			btn_prefer:SetText(langGet('cloadout.favorite_weapon'))
+			btn_prefer:SetEnabled(false)
+			preview:SetFavorite(true)
+
 			self:PreferWeapon(class)
-		end):SetIcon('icon16/award_star_gold_3.png')
-	end
-
-	if not index then
-		menu:Open()
-		return
-	end
-
-	local item = self.loadouts[self.loadout_index].items[index]
-	local reg_weapon = self.weapon_registry[item[1]]
-
-	if not reg_weapon then
-		menu:Open()
-		return
-	end
-
-	local function AddAmmoSlider(field_index, field_name, label, current_value, max)
-		menu:AddSpacer()
-
-		local pnl_ammo = vgui.Create('DPanel', menu)
-		pnl_ammo:SetBackgroundColor(Color(0,0,0,200))
-		pnl_ammo:DockPadding(8, -4, -22, 0)
-
-		local slid_ammo = vgui.Create('DNumSlider', pnl_ammo)
-		slid_ammo:SetMin(0)
-		slid_ammo:SetMax(max)
-		slid_ammo:SetDecimals(0)
-		slid_ammo:SetDefaultValue(16)
-		slid_ammo:SetValue(current_value)
-		slid_ammo:SetText(label)
-		slid_ammo:Dock(TOP)
-		slid_ammo:DockMargin(0, 0, 10, 0)
-		slid_ammo.Label:SetTextColor(Color(255,255,255))
-
-		slid_ammo.OnValueChanged = function(_, value)
-			value = math.Round(value)
-			item[field_index] = value
-			self.icons_list[index][field_name] = value
 		end
+	end
+
+	local btn_copy = container:Add('DButton')
+	btn_copy:SetText(langGet('cloadout.copy_to_clipboard'))
+	btn_copy:Dock(TOP)
+
+	btn_copy.DoClick = function()
+		SetClipboardText(class)
+	end
+
+	local reg_weapon = self.weapon_registry[class]
+	if not reg_weapon then return end
+
+	local item = self.loadouts[self.loadout_index].items[icon._weapon_index]
+
+	local function create_slider(label, value, max)
+		local slider = container:Add('DNumSlider')
+		slider:SetMin(0)
+		slider:SetMax(max)
+		slider:SetDecimals(0)
+		slider:SetDefaultValue(0)
+		slider:SetValue(value)
+		slider:SetText(label)
+		slider:Dock(TOP)
+		slider:DockMargin(0, 0, 10, 0)
+		slider.Label:SetTextColor(Color(0,0,0))
+
+		return slider
 	end
 
 	local max_primary, max_secondary = self:GetAmmoLimits()
 
 	if not reg_weapon.no_primary then
-		AddAmmoSlider(2, 'Primary', langGet('cloadout.ammo_primary'), item[2], max_primary)
+		local slider_primary = create_slider(langGet('cloadout.ammo_primary'), item[2], max_primary)
+
+		slider_primary.OnValueChanged = function(_, value)
+			value = math.Round(value)
+			item[2] = value
+			icon.Primary = value
+		end
 	end
 
 	if not reg_weapon.no_secondary then
-		AddAmmoSlider(3, 'Secondary', langGet('cloadout.ammo_secondary'), item[3], max_secondary)
-	end
+		local slider_secondary = create_slider(langGet('cloadout.ammo_secondary'), item[2], max_secondary)
 
-	menu:Open()
+		slider_secondary.OnValueChanged = function(_, value)
+			value = math.Round(value)
+			item[3] = value
+			icon.Secondary = value
+		end
+	end
 end
 
 function CLoadout:UpdateLists()
@@ -109,7 +141,8 @@ function CLoadout:UpdateAvailableList()
 		v.blacklisted = self:IsBlacklisted(local_ply, class)
 
 		local icon = self.list_available:Add('CLoadoutWeaponIcon')
-		icon:SetName(v.name)
+		icon:SetWeaponName(v.name)
+		icon:SetWeaponClass(class)
 
 		if v.blacklisted then
 			icon:SetBlacklisted(true)
@@ -118,11 +151,6 @@ function CLoadout:UpdateAvailableList()
 
 		if v.admin_only then
 			icon:SetAdminOnly(true)
-		end
-
-		local icon_path = self:GetWeaponIcon(class)
-		if icon_path then
-			icon:SetMaterial(icon_path)
 		end
 
 		icon.DoClick = function()
@@ -138,7 +166,9 @@ function CLoadout:UpdateAvailableList()
 		end
 
 		icon.OpenMenu = function()
-			self:ShowWeaponOptions(class)
+			local menu = DermaMenu()
+			menu:AddOption(langGet('cloadout.copy_to_clipboard'), function() SetClipboardText(class) end)
+			menu:Open()
 		end
 	end
 
@@ -161,9 +191,6 @@ function CLoadout:UpdateLoadoutList()
 
 	self.combo_loadouts._block_callback = nil
 
-	-- update the items list
-	self.icons_list = {}
-
 	for _, v in ipairs(self.list_loadout:GetChildren()) do
 		v:Remove()
 	end
@@ -171,11 +198,16 @@ function CLoadout:UpdateLoadoutList()
 	local items = self.loadouts[self.loadout_index].items
 	local preferred = self.loadouts[self.loadout_index].preferred
 
+	local function on_right_click_icon(icon)
+		self:OpenMenuForIcon(icon, preferred == icon._weapon_class)
+	end
+
 	for index, item in ipairs(items) do
 		local class = item[1]
 		local icon = self.list_loadout:Add('CLoadoutWeaponIcon')
 
-		self.icons_list[index] = icon
+		icon._weapon_class = class
+		icon._weapon_index = index
 
 		icon.DoClick = function()
 			self:RemoveWeapon(index)
@@ -194,18 +226,14 @@ function CLoadout:UpdateLoadoutList()
 				Derma_Message(langGet('cloadout.missing_weapons_help'), langGet('cloadout.missing_weapons'), langGet('cloadout.ok'))
 			end
 
-			icon:SetName(class)
+			icon:SetWeaponName(class)
 			icon:SetMaterial('icon16/cancel.png')
 
 			continue
 		end
 
-		icon:SetName(reg_weapon.name)
-
-		local icon_path = self:GetWeaponIcon(class)
-		if icon_path then
-			icon:SetMaterial(icon_path)
-		end
+		icon:SetWeaponName(reg_weapon.name)
+		icon:SetWeaponClass(class)
 
 		if reg_weapon.admin_only then
 			icon:SetAdminOnly(true)
@@ -219,9 +247,7 @@ function CLoadout:UpdateLoadoutList()
 			icon.Secondary = item[3]
 		end
 
-		icon.OpenMenu = function()
-			CLoadout:ShowWeaponOptions(class, preferred ~= class, index)
-		end
+		icon.OpenMenu = on_right_click_icon
 	end
 
 	self.list_loadout:InvalidateLayout(true)
@@ -259,8 +285,18 @@ function CLoadout:ShowPanel()
 	self.frame = frame
 
 	frame.OnClose = function()
+		if IsValid(self.ammo_frame) then
+			self.ammo_frame:Close()
+		end
+
 		self:Save()
 		self:Apply()
+	end
+
+	frame.OnFocusChanged = function(_, gained)
+		if gained and IsValid(self.ammo_frame) then
+			self.ammo_frame:Close()
+		end
 	end
 
 	local left_panel = vgui.Create('DPanel', frame)
@@ -533,14 +569,24 @@ do
 		self.Image:SetVisible(false)
 		self.Image:SetKeepAspect(false)
 
-		self.Name = ''
+		self.WeaponName = ''
+		self.WeaponClass = ''
 		self.Border = 0
 		self.TextColor = Color(255, 255, 255, 255)
 		self.TextOutlineColor = Color(0, 0, 0, 255)
 	end
 
-	function WeaponIcon:SetName(name)
-		self.Name = name
+	function WeaponIcon:SetWeaponName(name)
+		self.WeaponName = name
+	end
+
+	function WeaponIcon:SetWeaponClass(class)
+		self.WeaponClass = class
+
+		local icon_path = CLoadout:GetWeaponIcon(class)
+		if icon_path then
+			self:SetMaterial(icon_path)
+		end
 	end
 
 	function WeaponIcon:SetMaterial(name)
@@ -594,7 +640,7 @@ do
 		surface.SetDrawColor(30, 30, 30, 240)
 		surface.DrawRect(4, info_y, w - 8, info_h)
 
-		draw.SimpleTextOutlined(self.Name, 'Default', 8, info_y + info_h * 0.5,
+		draw.SimpleTextOutlined(self.WeaponName, 'Default', 8, info_y + info_h * 0.5,
 			self.TextColor, 0, 1, 1, self.TextOutlineColor)
 		surface.SetDrawColor(255, 255, 255, 255)
 
