@@ -38,11 +38,11 @@ function CLoadout:InitRegistry()
 	end
 
 	-- add scripted weapons (aka SWEPs) to our registry
-	-- (note: "engine" weapons arent listed here, so
-	-- we had to manually add them at the top of this file)
+	-- (note: "engine" weapons arent listed here,
+	-- so we had to manually add them earlier)
 	for _, v in pairs(weapons.GetList()) do
 		if not v.ClassName then continue end
-		if not v.Spawnable then continue end
+		--if not v.Spawnable then continue end
 
 		-- dont list 'base' class weapons
 		if string.find(v.ClassName, '_base', 1, true) then continue end
