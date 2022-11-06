@@ -195,12 +195,15 @@ function CLoadout:Load()
 	if not file.Exists('custom_loadout.txt', 'DATA') then return end
 
 	local data = file.Read('custom_loadout.txt', 'DATA')
-	if not data or data == '' then return end
+	if not data or data == '' then
+		Loadout.PrintF('No Custom Loadout data on disk.')
+		return
+	end
 
 	data = util.JSONToTable(data)
+
 	if not data then
 		Loadout.PrintF('Failed to parse the loadout data!')
-
 		return
 	end
 
