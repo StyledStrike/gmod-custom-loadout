@@ -20,7 +20,7 @@ function CLoadout:InitRegistry()
 	}
 
 	-- half life: source (if mounted)
-	if IsMounted('hl1') then
+	if IsMounted('hl1') or IsMounted('hl1mp') then
 		registry['weapon_crowbar_hl1'] = {name = 'Crowbar (HL1)', no_primary = true, no_secondary = true}
 		registry['weapon_glock_hl1'] = {name = 'Glock (HL1)', no_secondary = true}
 		registry['weapon_egon'] = {name = 'Gluon Gun (HL1)', no_secondary = true}
