@@ -1,0 +1,13 @@
+name: GLuaLint
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  Lint:
+    uses: FPtje/GLuaFixer/.github/workflows/glualint.yml@master
+    with:
+      config: "./glualint.json"
