@@ -1,8 +1,9 @@
 # Custom Loadout
-A loadout customization addon for Garry's Mod.
-[Visit the workshop page here.](https://steamcommunity.com/sharedfiles/filedetails/?id=2675972006)
 
-![Screenshot](https://i.imgur.com/vZlcuOl.png)
+A loadout customization addon for Garry's Mod.
+
+[![GLuaLint](https://github.com/StyledStrike/gmod-custom-loadout/actions/workflows/glualint.yml/badge.svg)](https://github.com/FPtje/GLuaFixer)
+[![Workshop Page](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-steam-workshop.jross.me%2F2675972006%2Fsubscriptions-text)](https://steamcommunity.com/sharedfiles/filedetails/?id=2675972006)
 
 ### Features
 
@@ -32,3 +33,7 @@ Returning `true` prevents the weapon from being given, and also marks them as un
 * URS/WUMA/BuilderX/sandbox's `PlayerGiveSWEP` restrictions still apply even if this hook doesn't block a weapon
 * The hook must be added on a shared realm (both on _CLIENT_ and _SERVER_)
 * It doesn't work in single player _(so if you need to test it, do it on a local, peer-to-peer or dedicated server instead.)_
+
+## Contributing
+
+Please follow the [CFC style guidelines](https://github.com/CFC-Servers/cfc_glua_style_guidelines) before opening pull requests.
