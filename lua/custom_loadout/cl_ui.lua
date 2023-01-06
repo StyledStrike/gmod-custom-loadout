@@ -1,19 +1,19 @@
 local langGet = language.GetPhrase
 
 function CLoadout:GetWeaponIcon( class )
-    if file.Exists( 'materials/entities/' .. class .. '.png', 'GAME' ) then
-        return 'entities/' .. class .. '.png'
+    if file.Exists( "materials/entities/" .. class .. ".png", "GAME" ) then
+        return "entities/" .. class .. ".png"
     end
 
-    if file.Exists( 'materials/vgui/entities/' .. class .. '.vtf', 'GAME' ) then
-        return 'vgui/entities/' .. class
+    if file.Exists( "materials/vgui/entities/" .. class .. ".vtf", "GAME" ) then
+        return "vgui/entities/" .. class
     end
 end
 
 function CLoadout:OpenMenuForIcon( icon )
     local class = icon.WeaponClass
 
-    local ammoFrame = vgui.Create( 'DFrame' )
+    local ammoFrame = vgui.Create( "DFrame" )
     ammoFrame:SetSize( 500, 168 )
     ammoFrame:SetTitle( icon.WeaponName )
     ammoFrame:SetDraggable( false )
@@ -22,29 +22,29 @@ function CLoadout:OpenMenuForIcon( icon )
     ammoFrame:MakePopup()
     self.ammoFrame = ammoFrame
 
-    local preview = ammoFrame:Add( 'CLoadoutWeaponIcon' )
+    local preview = ammoFrame:Add( "CLoadoutWeaponIcon" )
     preview:SetWeaponName( icon.WeaponName )
     preview:SetWeaponClass( class )
     preview:SetFavorite( icon:GetFavorite() )
     preview:SetEnabled( false )
     preview:Dock( LEFT )
 
-    local container = ammoFrame:Add( 'DPanel' )
+    local container = ammoFrame:Add( "DPanel" )
     container:Dock( FILL )
     container:DockPadding( 8, 8, 8, 8 )
 
-    local btnPrefer = container:Add( 'DButton' )
-    btnPrefer:SetIcon( 'icon16/award_star_gold_3.png' )
+    local btnPrefer = container:Add( "DButton" )
+    btnPrefer:SetIcon( "icon16/award_star_gold_3.png" )
     btnPrefer:Dock( TOP )
 
     if icon:GetFavorite() then
-        btnPrefer:SetText( langGet( 'cloadout.favorite_weapon' ) )
+        btnPrefer:SetText( langGet( "cloadout.favorite_weapon" ) )
         btnPrefer:SetEnabled( false )
     else
-        btnPrefer:SetText( langGet( 'cloadout.set_favorite_weapon' ) )
+        btnPrefer:SetText( langGet( "cloadout.set_favorite_weapon" ) )
 
         btnPrefer.DoClick = function()
-            btnPrefer:SetText( langGet( 'cloadout.favorite_weapon' ) )
+            btnPrefer:SetText( langGet( "cloadout.favorite_weapon" ) )
             btnPrefer:SetEnabled( false )
             preview:SetFavorite( true )
 
@@ -52,8 +52,8 @@ function CLoadout:OpenMenuForIcon( icon )
         end
     end
 
-    local btnCopy = container:Add( 'DButton' )
-    btnCopy:SetText( langGet( 'cloadout.copy_to_clipboard' ) )
+    local btnCopy = container:Add( "DButton" )
+    btnCopy:SetText( langGet( "cloadout.copy_to_clipboard" ) )
     btnCopy:Dock( TOP )
 
     btnCopy.DoClick = function()
@@ -66,7 +66,7 @@ function CLoadout:OpenMenuForIcon( icon )
     local item = self.loadouts[self.loadoutIndex].items[icon._itemIndex]
 
     local function createSlider( label, value, max )
-        local slider = container:Add( 'DNumSlider' )
+        local slider = container:Add( "DNumSlider" )
         slider:SetMin( 0 )
         slider:SetMax( max )
         slider:SetDecimals( 0 )
@@ -84,7 +84,7 @@ function CLoadout:OpenMenuForIcon( icon )
 
     if not regWeapon.noPrimary then
         local sliderPrimary = createSlider(
-            langGet( 'cloadout.ammo_primary' ),
+            langGet( "cloadout.ammo_primary" ),
             item[2],
             maxPrimary
         )
@@ -98,7 +98,7 @@ function CLoadout:OpenMenuForIcon( icon )
 
     if not regWeapon.noSecondary then
         local sliderSecondary = createSlider(
-            langGet( 'cloadout.ammo_secondary' ),
+            langGet( "cloadout.ammo_secondary" ),
             item[2],
             maxSecondary
         )
@@ -136,25 +136,25 @@ function CLoadout:UpdateAvailableList()
         end
     end
 
-    for class, v in SortedPairsByMemberValue( self.weaponRegistry, 'name' ) do
+    for class, v in SortedPairsByMemberValue( self.weaponRegistry, "name" ) do
         -- dont list weapons that are on the loadout already
         if isOnLoadout( class ) then continue end
 
         -- dont list weapons that dont match the search filter
-        if self.filter ~= '' then
+        if self.filter ~= "" then
             local found = string.find( string.lower( v.name ), self.filter, 1, true )
             if not found then continue end
         end
 
         v.blacklisted = self:IsBlacklisted( localPly, class )
 
-        local icon = self.listAvailable:Add( 'CLoadoutWeaponIcon' )
+        local icon = self.listAvailable:Add( "CLoadoutWeaponIcon" )
         icon:SetWeaponName( v.name )
         icon:SetWeaponClass( class )
 
         if v.blacklisted then
             icon:SetBlacklisted( true )
-            icon:SetTooltip( langGet( 'cloadout.weapon_unavailable' ) )
+            icon:SetTooltip( langGet( "cloadout.weapon_unavailable" ) )
         end
 
         if v.admin_only then
@@ -164,16 +164,16 @@ function CLoadout:UpdateAvailableList()
         icon.DoClick = function()
             if v.admin_only and not localPly:IsAdmin() then
                 Derma_Message(
-                    langGet( 'cloadout.admin_only' ),
-                    langGet( 'cloadout.weapon_restricted' ),
-                    langGet( 'cloadout.ok' )
+                    langGet( "cloadout.admin_only" ),
+                    langGet( "cloadout.weapon_restricted" ),
+                    langGet( "cloadout.ok" )
                 )
 
             elseif v.blacklisted then
                 Derma_Message(
-                    langGet( 'cloadout.weapon_unavailable' ),
-                    langGet( 'cloadout.weapon_restricted' ),
-                    langGet( 'cloadout.ok' )
+                    langGet( "cloadout.weapon_unavailable" ),
+                    langGet( "cloadout.weapon_restricted" ),
+                    langGet( "cloadout.ok" )
                 )
 
             else
@@ -185,7 +185,7 @@ function CLoadout:UpdateAvailableList()
             local menu = DermaMenu()
 
             menu:AddOption(
-                langGet( 'cloadout.copy_to_clipboard' ),
+                langGet( "cloadout.copy_to_clipboard" ),
                 function() SetClipboardText( class ) end
             )
 
@@ -222,7 +222,7 @@ function CLoadout:UpdateLoadoutList()
 
     for index, item in ipairs( items ) do
         local class = item[1]
-        local icon = self.listLoadoutItems:Add( 'CLoadoutWeaponIcon' )
+        local icon = self.listLoadoutItems:Add( "CLoadoutWeaponIcon" )
 
         icon:SetWeaponClass( class )
         icon._itemIndex = index
@@ -233,7 +233,7 @@ function CLoadout:UpdateLoadoutList()
 
         if preferred == class then
             icon:SetFavorite( true )
-            icon:SetTooltip( langGet( 'cloadout.favorite_weapon' ) )
+            icon:SetTooltip( langGet( "cloadout.favorite_weapon" ) )
         end
 
         local regWeapon = self.weaponRegistry[class]
@@ -244,14 +244,14 @@ function CLoadout:UpdateLoadoutList()
             if not self.hintedMissingWeapons then
                 self.hintedMissingWeapons = true
                 Derma_Message(
-                    langGet( 'cloadout.missing_weapons_help' ),
-                    langGet( 'cloadout.missing_weapons' ),
-                    langGet( 'cloadout.ok' )
+                    langGet( "cloadout.missing_weapons_help" ),
+                    langGet( "cloadout.missing_weapons" ),
+                    langGet( "cloadout.ok" )
                 )
             end
 
             icon:SetWeaponName( class )
-            icon:SetMaterial( 'icon16/cancel.png' )
+            icon:SetMaterial( "icon16/cancel.png" )
 
             continue
         end
@@ -286,8 +286,8 @@ function CLoadout:ShowPanel()
     frameW = math.Clamp( frameW, 600, ScrW() )
     frameH = math.Clamp( frameH, 400, ScrH() )
 
-    local frame = vgui.Create( 'DFrame' )
-    frame:SetTitle( langGet( 'cloadout.hint_usage' ) )
+    local frame = vgui.Create( "DFrame" )
+    frame:SetTitle( langGet( "cloadout.hint_usage" ) )
     frame:SetPos( 0, 0 )
     frame:SetSize( frameW, frameH )
     frame:SetSizable( true )
@@ -319,8 +319,8 @@ function CLoadout:ShowPanel()
         end
     end
 
-    local leftPanel = vgui.Create( 'DPanel', frame )
-    local rightPanel = vgui.Create( 'DPanel', frame )
+    local leftPanel = vgui.Create( "DPanel", frame )
+    local rightPanel = vgui.Create( "DPanel", frame )
 
     local function PaintBackground( _, sw, sh )
         surface.SetDrawColor( 32, 32, 32, 255 )
@@ -330,7 +330,7 @@ function CLoadout:ShowPanel()
     leftPanel.Paint = PaintBackground
     rightPanel.Paint = PaintBackground
 
-    local div = vgui.Create( 'DHorizontalDivider', frame )
+    local div = vgui.Create( "DHorizontalDivider", frame )
     div:Dock( FILL )
     div:SetLeft( leftPanel )
     div:SetRight( rightPanel )
@@ -361,18 +361,18 @@ function CLoadout:ShowPanel()
 
     ----- LEFT PANEL STUFF
 
-    local labelAvailable = vgui.Create( 'DLabel', leftPanel )
-    labelAvailable:SetText( langGet( 'cloadout.available_weapons' ) )
-    labelAvailable:SetFont( 'Trebuchet24' )
+    local labelAvailable = vgui.Create( "DLabel", leftPanel )
+    labelAvailable:SetText( langGet( "cloadout.available_weapons" ) )
+    labelAvailable:SetFont( "Trebuchet24" )
     labelAvailable:SetTextColor( Color( 150, 255, 150 ) )
     labelAvailable:Dock( TOP )
     labelAvailable:DockMargin( 4, 2, 0, 2 )
 
-    local entrySearch = vgui.Create( 'DTextEntry', leftPanel )
-    entrySearch:SetFont( 'ChatFont' )
+    local entrySearch = vgui.Create( "DTextEntry", leftPanel )
+    entrySearch:SetFont( "ChatFont" )
     entrySearch:SetMaximumCharCount( 64 )
     entrySearch:SetTabbingDisabled( true )
-    entrySearch:SetPlaceholderText( langGet( 'cloadout.search' ) )
+    entrySearch:SetPlaceholderText( langGet( "cloadout.search" ) )
     entrySearch:SetTall( 38 )
     entrySearch:Dock( BOTTOM )
 
@@ -382,10 +382,10 @@ function CLoadout:ShowPanel()
     end
 
     -- available weapons list
-    self.scrollAvailable = vgui.Create( 'DScrollPanel', leftPanel )
+    self.scrollAvailable = vgui.Create( "DScrollPanel", leftPanel )
     self.scrollAvailable:Dock( FILL )
 
-    self.listAvailable = vgui.Create( 'DIconLayout', self.scrollAvailable )
+    self.listAvailable = vgui.Create( "DIconLayout", self.scrollAvailable )
     self.listAvailable:Dock( FILL )
     self.listAvailable:DockMargin( 0, 0, 0, 0 )
     self.listAvailable:SetSpaceX( 4 )
@@ -393,25 +393,25 @@ function CLoadout:ShowPanel()
 
     ----- RIGHT PANEL STUFF
 
-    local panelOptions = vgui.Create( 'DPanel', rightPanel )
+    local panelOptions = vgui.Create( "DPanel", rightPanel )
     panelOptions:SetTall( 32 )
     panelOptions:Dock( TOP )
     panelOptions:DockPadding( 2, 2, 2, 2 )
     panelOptions:SetPaintBackground( false )
 
-    local buttonRename = vgui.Create( 'DButton', panelOptions )
-    buttonRename:SetText( '' )
-    buttonRename:SetImage( 'icon16/brick_edit.png' )
-    buttonRename:SetTooltip( langGet( 'cloadout.rename' ) )
+    local buttonRename = vgui.Create( "DButton", panelOptions )
+    buttonRename:SetText( "" )
+    buttonRename:SetImage( "icon16/brick_edit.png" )
+    buttonRename:SetTooltip( langGet( "cloadout.rename" ) )
     buttonRename:SetWide( 24 )
     buttonRename:Dock( RIGHT )
 
     buttonRename.DoClick = function()
         local loadoutName = self.loadouts[self.loadoutIndex].name
-        local helpText = string.format( langGet( 'cloadout.rename_help' ), loadoutName )
+        local helpText = string.format( langGet( "cloadout.rename_help" ), loadoutName )
 
         Derma_StringRequest(
-            langGet( 'cloadout.rename' ),
+            langGet( "cloadout.rename" ),
             helpText,
             loadoutName,
             function( name )
@@ -419,16 +419,16 @@ function CLoadout:ShowPanel()
 
                 if string.len( name ) == 0 then
                     Derma_Message(
-                        langGet( 'cloadout.rename_err_empty' ),
-                        langGet( 'cloadout.rename_err' ),
-                        langGet( 'cloadout.ok' )
+                        langGet( "cloadout.rename_err_empty" ),
+                        langGet( "cloadout.rename_err" ),
+                        langGet( "cloadout.ok" )
                     )
 
                 elseif self:FindLoadoutByName( name ) then
                     Derma_Message(
-                        string.format( langGet( 'cloadout.rename_err_exists' ), name ),
-                        langGet( 'cloadout.rename_err' ),
-                        langGet( 'cloadout.ok' )
+                        string.format( langGet( "cloadout.rename_err_exists" ), name ),
+                        langGet( "cloadout.rename_err" ),
+                        langGet( "cloadout.ok" )
                     )
 
                 else
@@ -438,61 +438,61 @@ function CLoadout:ShowPanel()
                 end
             end,
             nil,
-            langGet( 'cloadout.rename' )
+            langGet( "cloadout.rename" )
         )
     end
 
-    local buttonRemove = vgui.Create( 'DButton', panelOptions )
-    buttonRemove:SetText( '' )
-    buttonRemove:SetImage( 'icon16/delete.png' )
-    buttonRemove:SetTooltip( langGet( 'cloadout.remove' ) )
+    local buttonRemove = vgui.Create( "DButton", panelOptions )
+    buttonRemove:SetText( "" )
+    buttonRemove:SetImage( "icon16/delete.png" )
+    buttonRemove:SetTooltip( langGet( "cloadout.remove" ) )
     buttonRemove:SetWide( 24 )
     buttonRemove:Dock( RIGHT )
 
     buttonRemove.DoClick = function()
         local loadoutName = self.loadouts[self.loadoutIndex].name
-        local helpText = string.format( langGet( 'cloadout.remove_confirm' ), loadoutName )
+        local helpText = string.format( langGet( "cloadout.remove_confirm" ), loadoutName )
 
         Derma_Query(
             helpText,
-            langGet( 'cloadout.remove' ),
-            langGet( 'cloadout.yes' ),
+            langGet( "cloadout.remove" ),
+            langGet( "cloadout.yes" ),
             function()
                 self:DeleteLoadout( self.loadoutIndex )
                 self:Save()
             end,
-            langGet( 'cloadout.no' )
+            langGet( "cloadout.no" )
         )
     end
 
-    local buttonNew = vgui.Create( 'DButton', panelOptions )
-    buttonNew:SetText( '' )
-    buttonNew:SetImage( 'icon16/add.png' )
-    buttonNew:SetTooltip( langGet( 'cloadout.new' ) )
+    local buttonNew = vgui.Create( "DButton", panelOptions )
+    buttonNew:SetText( "" )
+    buttonNew:SetImage( "icon16/add.png" )
+    buttonNew:SetTooltip( langGet( "cloadout.new" ) )
     buttonNew:SetWide( 24 )
     buttonNew:Dock( RIGHT )
 
     buttonNew.DoClick = function()
         -- ask for a name for the new loadout
         Derma_StringRequest(
-            langGet( 'cloadout.new' ),
-            langGet( 'cloadout.new_help' ),
-            '',
+            langGet( "cloadout.new" ),
+            langGet( "cloadout.new_help" ),
+            "",
             function( name )
                 name = string.Trim( name )
 
                 if string.len( name ) == 0 then
                     Derma_Message(
-                        langGet( 'cloadout.rename_err_empty' ),
-                        langGet( 'cloadout.rename_err' ),
-                        langGet( 'cloadout.ok' )
+                        langGet( "cloadout.rename_err_empty" ),
+                        langGet( "cloadout.rename_err" ),
+                        langGet( "cloadout.ok" )
                     )
 
                 elseif self:FindLoadoutByName( name ) then
                     Derma_Message(
-                        string.format( langGet( 'cloadout.rename_err_exists' ), name ),
-                        langGet( 'cloadout.rename_err' ),
-                        langGet( 'cloadout.ok' )
+                        string.format( langGet( "cloadout.rename_err_exists" ), name ),
+                        langGet( "cloadout.rename_err" ),
+                        langGet( "cloadout.ok" )
                     )
 
                 else
@@ -502,12 +502,12 @@ function CLoadout:ShowPanel()
                 end
             end,
             nil,
-            langGet( 'cloadout.new' )
+            langGet( "cloadout.new" )
         )
     end
 
-    self.comboLoadouts = vgui.Create( 'DComboBox', panelOptions )
-    self.comboLoadouts:SetFont( 'Trebuchet24' )
+    self.comboLoadouts = vgui.Create( "DComboBox", panelOptions )
+    self.comboLoadouts:SetFont( "Trebuchet24" )
     self.comboLoadouts:SetSortItems( false )
     self.comboLoadouts:Dock( FILL )
     self.comboLoadouts:SetTextColor( Color( 193, 202, 255 ) )
@@ -526,7 +526,7 @@ function CLoadout:ShowPanel()
         self:UpdateLists()
     end
 
-    local panelToggle = vgui.Create( 'DPanel', rightPanel )
+    local panelToggle = vgui.Create( "DPanel", rightPanel )
     panelToggle:SetTall( 52 )
     panelToggle:Dock( BOTTOM )
     panelToggle:DockPadding( 8, 8, 8, 8 )
@@ -539,12 +539,12 @@ function CLoadout:ShowPanel()
         surface.DrawRect( 0, 0, sw, sh )
     end
 
-    local checkEnable = vgui.Create( 'DButton', panelToggle )
-    checkEnable:SetText( '' )
+    local checkEnable = vgui.Create( "DButton", panelToggle )
+    checkEnable:SetText( "" )
     checkEnable:Dock( FILL )
     checkEnable._highlightState = 1
-    checkEnable._label = langGet( 'cloadout.enable' )
-    checkEnable._help = langGet( 'cloadout.hint_ammo' )
+    checkEnable._label = langGet( "cloadout.enable" )
+    checkEnable._help = langGet( "cloadout.hint_ammo" )
 
     checkEnable.DoClick = function()
         self.enabled = not self.enabled
@@ -577,15 +577,15 @@ function CLoadout:ShowPanel()
         surface.SetDrawColor( 0, 150, 0, 255 * panelToggle._animState )
         surface.DrawRect( x + 2, y + 2, size - 4, size - 4 )
 
-        draw.SimpleText( s._label, 'Trebuchet18', x + 22, sh * 0.3, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
-        draw.SimpleText( s._help, 'DefaultSmall', x + 22, sh * 0.7, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+        draw.SimpleText( s._label, "Trebuchet18", x + 22, sh * 0.3, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+        draw.SimpleText( s._help, "DefaultSmall", x + 22, sh * 0.7, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
     end
 
     -- loadout weapons list
-    self.scrollLoadoutItems = vgui.Create( 'DScrollPanel', rightPanel )
+    self.scrollLoadoutItems = vgui.Create( "DScrollPanel", rightPanel )
     self.scrollLoadoutItems:Dock( FILL )
 
-    self.listLoadoutItems = vgui.Create( 'DIconLayout', self.scrollLoadoutItems )
+    self.listLoadoutItems = vgui.Create( "DIconLayout", self.scrollLoadoutItems )
     self.listLoadoutItems:Dock( FILL )
     self.listLoadoutItems:DockMargin( 0, 0, 0, 0 )
     self.listLoadoutItems:SetSpaceX( 4 )
@@ -594,13 +594,13 @@ function CLoadout:ShowPanel()
     self:UpdateLists()
 end
 
-if engine.ActiveGamemode() == 'sandbox' then
+if engine.ActiveGamemode() == "sandbox" then
     list.Set(
-        'DesktopWindows',
-        'CLoadoutDesktopIcon',
+        "DesktopWindows",
+        "CLoadoutDesktopIcon",
         {
-            title = langGet( 'cloadout.title' ),
-            icon = 'entities/weapon_smg1.png',
+            title = langGet( "cloadout.title" ),
+            icon = "entities/weapon_smg1.png",
             init = function() CLoadout:ShowPanel() end
         }
     )
@@ -611,30 +611,30 @@ do
     local WeaponIcon = {}
 
     local iconMaterials = {
-        ammo = Material( 'icon16/bullet_yellow.png' ),
-        adminOnly = Material( 'icon16/shield.png' ),
-        favorite = Material( 'icon16/star.png', 'smooth mips' ),
-        blacklisted = Material( 'icon16/cross.png', 'smooth mips' )
+        ammo = Material( "icon16/bullet_yellow.png" ),
+        adminOnly = Material( "icon16/shield.png" ),
+        favorite = Material( "icon16/star.png", "smooth mips" ),
+        blacklisted = Material( "icon16/cross.png", "smooth mips" )
     }
 
-    AccessorFunc( WeaponIcon, 'm_bAdminOnly', 'AdminOnly' )
-    AccessorFunc( WeaponIcon, 'm_bFavorite', 'Favorite' )
-    AccessorFunc( WeaponIcon, 'm_bBlacklisted', 'Blacklisted' )
+    AccessorFunc( WeaponIcon, "m_bAdminOnly", "AdminOnly" )
+    AccessorFunc( WeaponIcon, "m_bFavorite", "Favorite" )
+    AccessorFunc( WeaponIcon, "m_bBlacklisted", "Blacklisted" )
 
     function WeaponIcon:Init()
         self:SetPaintBackground( false )
         self:SetSize( 140, 128 )
-        self:SetText( '' )
+        self:SetText( "" )
         self:SetDoubleClickingEnabled( false )
 
-        self.Image = self:Add( 'DImage' )
+        self.Image = self:Add( "DImage" )
         self.Image:SetPos( 0, 0 )
         self.Image:SetSize( 128, 128 )
         self.Image:SetVisible( false )
         self.Image:SetKeepAspect( false )
 
-        self.WeaponName = ''
-        self.WeaponClass = ''
+        self.WeaponName = ""
+        self.WeaponClass = ""
         self.Border = 0
         self.TextColor = Color( 255, 255, 255, 255 )
         self.TextOutlineColor = Color( 0, 0, 0, 255 )
@@ -660,12 +660,12 @@ do
 
         -- Look for the old style material
         if not mat or mat:IsError() then
-            name = name:Replace( 'entities/', 'VGUI/entities/' )
-            name = name:Replace( '.png', '' )
+            name = name:Replace( "entities/", "VGUI/entities/" )
+            name = name:Replace( ".png", "" )
             mat = Material( name )
         end
 
-        -- Couldn't find any material.. just return
+        -- Couldn"t find any material.. just return
         if not mat or mat:IsError() then return end
 
         self.Image:SetMaterial( mat )
@@ -704,7 +704,7 @@ do
         surface.SetDrawColor( 30, 30, 30, 240 )
         surface.DrawRect( 4, infoY, w - 8, infoH )
 
-        draw.SimpleTextOutlined( self.WeaponName, 'Default', 8, infoY + infoH * 0.5,
+        draw.SimpleTextOutlined( self.WeaponName, "Default", 8, infoY + infoH * 0.5,
             self.TextColor, 0, 1, 1, self.TextOutlineColor )
         surface.SetDrawColor( 255, 255, 255, 255 )
 
@@ -712,7 +712,7 @@ do
 
         if self.Primary then
             if self.Secondary then
-                str = self.Primary .. '/' .. self.Secondary
+                str = self.Primary .. "/" .. self.Secondary
             else
                 str = self.Primary
             end
@@ -725,7 +725,7 @@ do
             surface.SetMaterial( iconMaterials.ammo )
             surface.DrawTexturedRect( w - 18, infoY + 3, 16, 16 )
 
-            draw.SimpleTextOutlined( str, 'Default', w - 18, infoY + infoH * 0.5,
+            draw.SimpleTextOutlined( str, "Default", w - 18, infoY + infoH * 0.5,
                 self.TextColor, 2, 1, 1, self.TextOutlineColor )
         end
 
@@ -750,5 +750,5 @@ do
         end
     end
 
-    vgui.Register( 'CLoadoutWeaponIcon', WeaponIcon, 'DButton' )
+    vgui.Register( "CLoadoutWeaponIcon", WeaponIcon, "DButton" )
 end

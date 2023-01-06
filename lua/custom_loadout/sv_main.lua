@@ -1,18 +1,18 @@
-util.AddNetworkString( 'cloadout.apply' )
+util.AddNetworkString( "cloadout.apply" )
 
 local cvarPrimaryLimit = CreateConVar(
-    'custom_loadout_primary_limit',
-    '5000',
+    "custom_loadout_primary_limit",
+    "5000",
     bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
-    '[Custom Loadout] Limits how much primary ammo is given to players.',
+    "[Custom Loadout] Limits how much primary ammo is given to players.",
     0, 9999
 )
 
 local cvarSecondaryLimit = CreateConVar(
-    'custom_loadout_secondary_limit',
-    '50',
+    "custom_loadout_secondary_limit",
+    "50",
     bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
-    '[Custom Loadout] Limits how much secondary ammo is given to players.',
+    "[Custom Loadout] Limits how much secondary ammo is given to players.",
     0, 9999
 )
 
@@ -22,7 +22,7 @@ CLoadout.cache = {}
 function CLoadout:IsAvailableForPlayer( ply )
     -- builderx compatibility
     if ply.GetBuild and ply:GetBuild() then
-        return false, 'Your loadout will be applied once you leave build mode.'
+        return false, "Your loadout will be applied once you leave build mode."
     end
 
     return true
@@ -46,14 +46,14 @@ function CLoadout:GiveWeapons( ply )
     local preferredWeapon
 
     for _, item in ipairs( items ) do
-        local swep = list.Get( 'Weapon' )[item[1]]
+        local swep = list.Get( "Weapon" )[item[1]]
         if not swep then continue end
 
         -- dont give admin-only weapons if ply is not a admin (duh)
         if ( swep.AdminOnly or not swep.Spawnable ) and not ply:IsAdmin() then continue end
 
         -- sandbox compatibility (yeah...)
-        if not gamemode.Call( 'PlayerGiveSWEP', ply, item[1], swep ) then continue end
+        if not gamemode.Call( "PlayerGiveSWEP", ply, item[1], swep ) then continue end
 
         if self:IsBlacklisted( ply, item[1] ) then continue end
 
@@ -89,7 +89,7 @@ function CLoadout:Apply( ply )
 
     local steam_id = ply:SteamID()
 
-    -- timers were used here just to override other addon's shenanigans
+    -- timers were used here just to override other addon"s shenanigans
 
     if self.cache[steam_id] and self.cache[steam_id].enabled then
         timer.Simple( 0.1, function() CLoadout:GiveWeapons( ply ) end )
@@ -102,13 +102,13 @@ function CLoadout:ReceiveData( len, ply )
     local data = net.ReadData( len )
     data = util.Decompress( data )
 
-    if not data or data == '' then return end
+    if not data or data == "" then return end
 
     local steam_id = ply:SteamID()
     local loadout = util.JSONToTable( data )
 
     if not loadout then
-        CLoadout.PrintF( 'Failed to parse %s\'s loadout!', ply:Nick() )
+        CLoadout.PrintF( "Failed to parse %s\"s loadout!", ply:Nick() )
 
         return
     end
@@ -124,7 +124,7 @@ function CLoadout:ReceiveData( len, ply )
 
     -- filter inexistent weapons
     for _, item in ipairs( loadout.items ) do
-        local swep = list.Get( 'Weapon' )[item[1]]
+        local swep = list.Get( "Weapon" )[item[1]]
 
         if swep then
             table.insert(
@@ -141,7 +141,7 @@ function CLoadout:ReceiveData( len, ply )
     local canUse, reason = self:IsAvailableForPlayer( ply )
 
     if not canUse then
-        ply:ChatPrint( '[Custom Loadout] ' .. reason )
+        ply:ChatPrint( "[Custom Loadout] " .. reason )
 
         return
     end
@@ -150,24 +150,24 @@ function CLoadout:ReceiveData( len, ply )
 end
 
 -- remove the loadout from cache when players leave
-hook.Add( 'PlayerDisconnected', 'CLoadout_ClearCache', function( ply )
+hook.Add( "PlayerDisconnected", "CLoadout_ClearCache", function( ply )
     if not ply:IsBot() and CLoadout.cache[ply:SteamID()] then
         CLoadout.cache[ply:SteamID()] = nil
     end
 end )
 
 -- apply the loadout
-hook.Add( 'PlayerLoadout', 'CLoadout_ApplyLoadout', function( ply )
+hook.Add( "PlayerLoadout", "CLoadout_ApplyLoadout", function( ply )
     return CLoadout:Apply( ply )
 end )
 
 -- apply the loadout when leaving build mode (builderx)
-hook.Add( 'builderx.mode.onswitch', 'CLoadout_ApplyLoadoutOnExitBuild', function( ply, bIsBuild )
+hook.Add( "builderx.mode.onswitch", "CLoadout_ApplyLoadoutOnExitBuild", function( ply, bIsBuild )
     if not bIsBuild then
         CLoadout:Apply( ply )
     end
 end )
 
-net.Receive( 'cloadout.apply', function( len, ply )
+net.Receive( "cloadout.apply", function( len, ply )
     CLoadout:ReceiveData( len, ply )
 end )

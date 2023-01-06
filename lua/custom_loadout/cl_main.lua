@@ -1,40 +1,40 @@
 function CLoadout:InitRegistry()
     -- weapons that cant be automatically listed by code
     local registry = {
-        ['weapon_crowbar'] = { name = 'Crowbar', noPrimary = true, noSecondary = true },
-        ['weapon_stunstick'] = { name = 'Stunstick', noPrimary = true, noSecondary = true },
-        ['weapon_physcannon'] = { name = 'Gravity Gun', noPrimary = true, noSecondary = true },
-        ['weapon_physgun'] = { name = 'Physics Gun', noPrimary = true, noSecondary = true },
-        ['weapon_pistol'] = { name = '9mm Pistol', noSecondary = true },
-        ['weapon_357'] = { name = '.357 Magnum', noSecondary = true },
-        ['weapon_smg1'] = { name = 'SMG' },
-        ['weapon_ar2'] = { name = 'Pulse-Rifle' },
-        ['weapon_shotgun'] = { name = 'Shotgun', noSecondary = true },
-        ['weapon_crossbow'] = { name = 'Crossbow', noSecondary = true },
-        ['weapon_frag'] = { name = 'Grenade', noSecondary = true },
-        ['weapon_rpg'] = { name = 'RPG', noSecondary = true },
-        ['weapon_slam'] = { name = 'S.L.A.M', noPrimary = true },
-        ['weapon_bugbait'] = { name = 'Bug Bait', noPrimary = true, noSecondary = true },
-        ['weapon_alyxgun'] = { name = 'Alyx Gun' },
-        ['weapon_annabelle'] = { name = 'Annabelle' }
+        ["weapon_crowbar"] = { name = "Crowbar", noPrimary = true, noSecondary = true },
+        ["weapon_stunstick"] = { name = "Stunstick", noPrimary = true, noSecondary = true },
+        ["weapon_physcannon"] = { name = "Gravity Gun", noPrimary = true, noSecondary = true },
+        ["weapon_physgun"] = { name = "Physics Gun", noPrimary = true, noSecondary = true },
+        ["weapon_pistol"] = { name = "9mm Pistol", noSecondary = true },
+        ["weapon_357"] = { name = ".357 Magnum", noSecondary = true },
+        ["weapon_smg1"] = { name = "SMG" },
+        ["weapon_ar2"] = { name = "Pulse-Rifle" },
+        ["weapon_shotgun"] = { name = "Shotgun", noSecondary = true },
+        ["weapon_crossbow"] = { name = "Crossbow", noSecondary = true },
+        ["weapon_frag"] = { name = "Grenade", noSecondary = true },
+        ["weapon_rpg"] = { name = "RPG", noSecondary = true },
+        ["weapon_slam"] = { name = "S.L.A.M", noPrimary = true },
+        ["weapon_bugbait"] = { name = "Bug Bait", noPrimary = true, noSecondary = true },
+        ["weapon_alyxgun"] = { name = "Alyx Gun" },
+        ["weapon_annabelle"] = { name = "Annabelle" }
     }
 
     -- half life: source (if mounted)
-    if IsMounted( 'hl1' ) or IsMounted( 'hl1mp' ) then
-        registry['weapon_crowbar_hl1'] = { name = 'Crowbar (HL1)', noPrimary = true, noSecondary = true }
-        registry['weapon_glock_hl1'] = { name = 'Glock (HL1)', noSecondary = true }
-        registry['weapon_egon'] = { name = 'Gluon Gun (HL1)', noSecondary = true }
-        registry['weapon_gauss'] = { name = 'Tau Cannon (HL1)', noSecondary = true }
-        registry['weapon_357_hl1'] = { name = '.357 Handgun (HL1)', noSecondary = true }
-        registry['weapon_mp5_hl1'] = { name = 'MP5 (HL1)' }
-        registry['weapon_shotgun_hl1'] = { name = 'SPAS-12 (HL1)', noSecondary = true }
-        registry['weapon_crossbow_hl1'] = { name = 'Crossbow (HL1)', noSecondary = true }
-        registry['weapon_handgrenade'] = { name = 'Hand Grenade (HL1)', noSecondary = true }
-        registry['weapon_hornetgun'] = { name = 'Hornet Gun (HL1)' }
-        registry['weapon_rpg_hl1'] = { name = 'RPG Launcher (HL1)' }
-        registry['weapon_satchel'] = { name = 'Satchel (HL1)', noSecondary = true }
-        registry['weapon_snark'] = { name = 'Snarks (HL1)', noSecondary = true }
-        registry['weapon_tripmine'] = { name = 'Tripmine (HL1)', noSecondary = true }
+    if IsMounted( "hl1" ) or IsMounted( "hl1mp" ) then
+        registry["weapon_crowbar_hl1"] = { name = "Crowbar (HL1)", noPrimary = true, noSecondary = true }
+        registry["weapon_glock_hl1"] = { name = "Glock (HL1)", noSecondary = true }
+        registry["weapon_egon"] = { name = "Gluon Gun (HL1)", noSecondary = true }
+        registry["weapon_gauss"] = { name = "Tau Cannon (HL1)", noSecondary = true }
+        registry["weapon_357_hl1"] = { name = ".357 Handgun (HL1)", noSecondary = true }
+        registry["weapon_mp5_hl1"] = { name = "MP5 (HL1)" }
+        registry["weapon_shotgun_hl1"] = { name = "SPAS-12 (HL1)", noSecondary = true }
+        registry["weapon_crossbow_hl1"] = { name = "Crossbow (HL1)", noSecondary = true }
+        registry["weapon_handgrenade"] = { name = "Hand Grenade (HL1)", noSecondary = true }
+        registry["weapon_hornetgun"] = { name = "Hornet Gun (HL1)" }
+        registry["weapon_rpg_hl1"] = { name = "RPG Launcher (HL1)" }
+        registry["weapon_satchel"] = { name = "Satchel (HL1)", noSecondary = true }
+        registry["weapon_snark"] = { name = "Snarks (HL1)", noSecondary = true }
+        registry["weapon_tripmine"] = { name = "Tripmine (HL1)", noSecondary = true }
     end
 
     -- add scripted weapons (aka SWEPs) to our registry
@@ -44,12 +44,12 @@ function CLoadout:InitRegistry()
         if not v.ClassName then continue end
         --if not v.Spawnable then continue end
 
-        -- dont list 'base' class weapons
-        if string.find( v.ClassName, '_base', 1, true ) then continue end
+        -- dont list "base" class weapons
+        if string.find( v.ClassName, "_base", 1, true ) then continue end
 
         registry[v.ClassName] = {
             admin_only = v.AdminOnly,
-            name = ( v.PrintName and v.PrintName ~= '' ) and v.PrintName or v.ClassName
+            name = ( v.PrintName and v.PrintName ~= "" ) and v.PrintName or v.ClassName
         }
 
         if v.Primary and not v.Primary.ClipSize then
@@ -65,8 +65,8 @@ function CLoadout:InitRegistry()
 end
 
 function CLoadout:GetAmmoLimits()
-    local cvarPrimaryLimit = GetConVar( 'custom_loadout_primary_limit' )
-    local cvarSecondaryLimit = GetConVar( 'custom_loadout_secondary_limit' )
+    local cvarPrimaryLimit = GetConVar( "custom_loadout_primary_limit" )
+    local cvarSecondaryLimit = GetConVar( "custom_loadout_secondary_limit" )
 
     return
         cvarPrimaryLimit and cvarPrimaryLimit:GetInt() or 5000,
@@ -81,7 +81,7 @@ end
 
 function CLoadout:CreateLoadout( name, items, preferred )
     local loadout = {
-        name = 'My Loadout',
+        name = "My Loadout",
         items = {}
     }
 
@@ -131,19 +131,19 @@ function CLoadout:Apply()
     data = util.Compress( util.TableToJSON( data ) )
 
     if not data then
-        CLoadout.PrintF( 'Failed to compress the loadout data!' )
+        CLoadout.PrintF( "Failed to compress the loadout data!" )
 
         return
     end
 
-    net.Start( 'cloadout.apply', false )
+    net.Start( "cloadout.apply", false )
     net.WriteData( data, #data )
     net.SendToServer()
 end
 
 function CLoadout:Save()
     file.Write(
-        'custom_loadout.txt',
+        "custom_loadout.txt",
         util.TableToJSON( {
             enabled = self.enabled,
             loadouts = self.loadouts,
@@ -174,7 +174,7 @@ end
 
 function CLoadout:Init()
     -- search filter
-    self.filter = ''
+    self.filter = ""
 
     -- settings
     self.enabled = false
@@ -198,18 +198,18 @@ function CLoadout:Init()
 end
 
 function CLoadout:Load()
-    if not file.Exists( 'custom_loadout.txt', 'DATA' ) then return end
+    if not file.Exists( "custom_loadout.txt", "DATA" ) then return end
 
-    local data = file.Read( 'custom_loadout.txt', 'DATA' )
-    if not data or data == '' then
-        Loadout.PrintF( 'No Custom Loadout data on disk.' )
+    local data = file.Read( "custom_loadout.txt", "DATA" )
+    if not data or data == "" then
+        Loadout.PrintF( "No Custom Loadout data on disk." )
         return
     end
 
     data = util.JSONToTable( data )
 
     if not data then
-        Loadout.PrintF( 'Failed to parse the loadout data!' )
+        Loadout.PrintF( "Failed to parse the loadout data!" )
         return
     end
 
@@ -229,8 +229,8 @@ function CLoadout:Load()
 end
 
 -- late init (to make sure all weapons have been registered)
-hook.Add( 'InitPostEntity', 'CLoadout_Initialize', function()
-    hook.Remove( 'InitPostEntity', 'CLoadout_Initialize' )
+hook.Add( "InitPostEntity", "CLoadout_Initialize", function()
+    hook.Remove( "InitPostEntity", "CLoadout_Initialize" )
 
     -- on rare occasions it just didnt work
     -- if called right at InitPostEntity
@@ -238,21 +238,21 @@ hook.Add( 'InitPostEntity', 'CLoadout_Initialize', function()
 end )
 
 concommand.Add(
-    'custom_loadout_open',
+    "custom_loadout_open",
     function() CLoadout:ShowPanel() end,
     nil,
-    'Opens the loadout customization window.'
+    "Opens the loadout customization window."
 )
 
 -- convert old save files to the new format
 do
-    local data = file.Read( 'sanct_loadout.txt', 'DATA' )
-    if not data or data == '' then return end
+    local data = file.Read( "sanct_loadout.txt", "DATA" )
+    if not data or data == "" then return end
 
     data = util.JSONToTable( data )
 
     if not data then
-        Loadout.PrintF( 'Failed to parse old loadout data!' )
+        Loadout.PrintF( "Failed to parse old loadout data!" )
 
         return
     end
@@ -270,7 +270,7 @@ do
     if istable( data.loadouts ) and table.IsSequential( data.loadouts ) then
         for _, v in ipairs( data.loadouts ) do
             local loadout = {
-                name = 'My Loadout',
+                name = "My Loadout",
                 items = {}
             }
 
@@ -297,7 +297,7 @@ do
     -- very old format (which only had a single loadout)
     if istable( data.items ) and table.IsSequential( data.items ) then
         local loadout = {
-            name = 'Old Loadout',
+            name = "Old Loadout",
             items = {}
         }
 
@@ -314,8 +314,8 @@ do
         table.insert( newData.loadouts, loadout )
     end
 
-    CLoadout.PrintF( 'Converted old loadout data to the new format.' )
+    CLoadout.PrintF( "Converted old loadout data to the new format." )
 
-    file.Write( 'custom_loadout.txt', util.TableToJSON( newData ) )
-    file.Delete( 'sanct_loadout.txt' )
+    file.Write( "custom_loadout.txt", util.TableToJSON( newData ) )
+    file.Delete( "sanct_loadout.txt" )
 end
