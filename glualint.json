@@ -24,7 +24,7 @@
     "lint_spaceBetweenParens":          true,
     "lint_spaceBetweenBrackets":        true,
     "lint_spaceBetweenBraces":          true,
-    "lint_ignoreFiles":                 ["**.lua"],
+    "lint_ignoreFiles":                 [],
 
     "prettyprint_spaceBetweenParens":   true,
     "prettyprint_spaceBetweenBrackets": false,
