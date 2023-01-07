@@ -399,6 +399,25 @@ function CLoadout:ShowPanel()
     panelOptions:DockPadding( 2, 2, 2, 2 )
     panelOptions:SetPaintBackground( false )
 
+    local buttonCopy = vgui.Create( "DButton", panelOptions )
+    buttonCopy:SetText( "" )
+    buttonCopy:SetImage( "icon16/brick_go.png" )
+    buttonCopy:SetTooltip( langGet( "cloadout.copy_inventory" ) )
+    buttonCopy:SetWide( 24 )
+    buttonCopy:Dock( RIGHT )
+
+    buttonCopy.DoClick = function()
+        Derma_Query(
+            langGet( "cloadout.copy_confirm" ),
+            langGet( "cloadout.copy_inventory" ),
+            langGet( "cloadout.yes" ),
+            function()
+                self:AddInventoryWeapons()
+            end,
+            langGet( "cloadout.no" )
+        )
+    end
+
     local buttonRename = vgui.Create( "DButton", panelOptions )
     buttonRename:SetText( "" )
     buttonRename:SetImage( "icon16/brick_edit.png" )

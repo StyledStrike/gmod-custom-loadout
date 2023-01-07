@@ -161,6 +161,33 @@ function CLoadout:AddWeapon( class )
     self:UpdateLists()
 end
 
+function CLoadout:AddInventoryWeapons()
+    local items = self.loadouts[self.loadoutIndex].items
+
+    -- find which classes are already in this loadout
+    local alreadyInLoadout = {}
+
+    for _, v in ipairs( items ) do
+        alreadyInLoadout[v[1]] = true
+    end
+
+    -- add inventory weapons, except the ones already on the loadout
+    local weaponsList = LocalPlayer():GetWeapons()
+
+    for _, v in ipairs( weaponsList ) do
+        local class = ( v.GetClass and v:GetClass() ) or v.ClassName
+
+        if not alreadyInLoadout[class] then
+            table.insert(
+                self.loadouts[self.loadoutIndex].items,
+                { class, 200, 1 }
+            )
+        end
+    end
+
+    self:UpdateLists()
+end
+
 function CLoadout:RemoveWeapon( index )
     table.remove( self.loadouts[self.loadoutIndex].items, index )
     self:UpdateLists()
@@ -235,6 +262,15 @@ hook.Add( "InitPostEntity", "CLoadout_Initialize", function()
     -- on rare occasions it just didnt work
     -- if called right at InitPostEntity
     timer.Simple( 1, function() CLoadout:Init() end )
+end )
+
+hook.Add( "OnPlayerChat", "CLoadout_ChatCommand", function( ply, text )
+    if ply ~= LocalPlayer() then return end
+    if text[1] ~= "!" then return end
+
+    if string.lower( string.Trim( text ) ) == "!loadout" then
+        CLoadout:ShowPanel()
+    end
 end )
 
 concommand.Add(
