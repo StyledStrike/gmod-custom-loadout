@@ -20,7 +20,13 @@ function CLoadout:IsBlacklisted( ply, class )
 
     -- WUMA compatibility
     if WUMA then
-        return ply:CheckRestriction( "swep", class )
+        if SERVER then
+            return ply:CheckRestriction( "swep", class )
+        end
+
+        if CLIENT and WUMA.HasRestriction then
+            return WUMA.HasRestriction( ply:GetUserGroup(), "swep", class )
+        end
     end
 
     return false
