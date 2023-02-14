@@ -219,7 +219,6 @@ function CLoadout:UpdateLoadoutList()
     local items = self.loadouts[self.loadoutIndex].items
     local preferred = self.loadouts[self.loadoutIndex].preferred
 
-
     for index, item in ipairs( items ) do
         local class = item[1]
         local icon = self.listLoadoutItems:Add( "CLoadoutWeaponIcon" )
@@ -269,6 +268,10 @@ function CLoadout:UpdateLoadoutList()
         end
     end
 
+    self.labelCount:SetTextColor( #items > self:GetWeaponLimit() and Color( 255, 50, 50 ) or color_white )
+    self.labelCount:SetText( string.format( "%d/%d", #items, self:GetWeaponLimit() ) )
+    self.labelCount:SizeToContents()
+
     self.listLoadoutItems:InvalidateLayout( true )
     self.scrollLoadoutItems:InvalidateLayout()
 end
@@ -303,6 +306,16 @@ function CLoadout:ShowPanel()
 
     frame._maximized = false
     frame.btnMaxim:SetDisabled( false )
+
+    frame.btnClose.DoClick = function()
+        local items = self.loadouts[self.loadoutIndex].items
+
+        if #items > self:GetWeaponLimit() then
+            Derma_Message( "#cloadout.hint_too_many", "#cloadout.title", "#cloadout.ok" )
+        else
+            frame:Close()
+        end
+    end
 
     frame.OnClose = function()
         if IsValid( self.ammoFrame ) then
@@ -599,6 +612,10 @@ function CLoadout:ShowPanel()
         draw.SimpleText( s._label, "Trebuchet18", x + 22, sh * 0.3, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
         draw.SimpleText( s._help, "DefaultSmall", x + 22, sh * 0.7, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
     end
+
+    self.labelCount = vgui.Create( "DLabel", panelToggle )
+    self.labelCount:SetText( "0/0" )
+    self.labelCount:Dock( RIGHT )
 
     -- loadout weapons list
     self.scrollLoadoutItems = vgui.Create( "DScrollPanel", rightPanel )

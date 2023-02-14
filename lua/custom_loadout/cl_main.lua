@@ -64,6 +64,12 @@ function CLoadout:InitRegistry()
     self.weaponRegistry = registry
 end
 
+function CLoadout:GetWeaponLimit()
+    local cvarWeaponLimit = GetConVar( "custom_loadout_max_items" )
+
+    return cvarWeaponLimit and cvarWeaponLimit:GetInt() or 25
+end
+
 function CLoadout:GetAmmoLimits()
     local cvarPrimaryLimit = GetConVar( "custom_loadout_primary_limit" )
     local cvarSecondaryLimit = GetConVar( "custom_loadout_secondary_limit" )
@@ -153,12 +159,14 @@ function CLoadout:Save()
 end
 
 function CLoadout:AddWeapon( class )
-    table.insert(
-        self.loadouts[self.loadoutIndex].items,
-        { class, 200, 1 }
-    )
+    local items = self.loadouts[self.loadoutIndex].items
 
-    self:UpdateLists()
+    if #items < self:GetWeaponLimit() then
+        table.insert( items, { class, 200, 1 } )
+        self:UpdateLists()
+    else
+        Derma_Message( "#cloadout.weapon_limit", "#cloadout.title", "#cloadout.ok" )
+    end
 end
 
 function CLoadout:AddInventoryWeapons()
