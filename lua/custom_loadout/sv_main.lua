@@ -27,6 +27,9 @@ local cvarWeaponLimit = CreateConVar(
 -- store player loadouts
 CLoadout.cache = {}
 
+-- safe guard against spam
+CLoadout.cooldown = {}
+
 function CLoadout:IsAvailableForPlayer( ply )
     -- builderx compatibility
     if ply.GetBuild and ply:GetBuild() then
@@ -107,12 +110,22 @@ function CLoadout:Apply( ply )
 end
 
 function CLoadout:ReceiveData( len, ply )
+    local steamId = ply:SteamID()
+    local t = RealTime()
+
+    if self.cooldown[steamId] and self.cooldown[steamId] > t then
+        CLoadout.PrintF( "%s <%s> has sent loadout data too fast!", ply:Nick(), steamId )
+
+        return
+    end
+
+    self.cooldown[steamId] = t + 1
+
     local data = net.ReadData( len )
     data = util.Decompress( data )
 
     if not data or data == "" then return end
 
-    local steamId = ply:SteamID()
     local loadout = util.JSONToTable( data )
 
     if not loadout then
@@ -165,8 +178,16 @@ end
 
 -- remove the loadout from cache when players leave
 hook.Add( "PlayerDisconnected", "CLoadout_ClearCache", function( ply )
-    if not ply:IsBot() and CLoadout.cache[ply:SteamID()] then
-        CLoadout.cache[ply:SteamID()] = nil
+    if ply:IsBot() then return end
+
+    local steamId = ply:SteamID()
+
+    if CLoadout.cache[steamId] then
+        CLoadout.cache[steamId] = nil
+    end
+
+    if CLoadout.cooldown[steamId] then
+        CLoadout.cooldown[steamId] = nil
     end
 end )
 
