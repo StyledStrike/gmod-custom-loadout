@@ -18,7 +18,7 @@ local cvarSecondaryLimit = CreateConVar(
 
 local cvarWeaponLimit = CreateConVar(
     "custom_loadout_max_items",
-    "25",
+    "40",
     bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
     "[Custom Loadout] Limits how many weapons a single loadout can have.",
     0, 100
