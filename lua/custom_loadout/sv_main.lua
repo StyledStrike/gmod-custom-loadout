@@ -29,6 +29,7 @@ CLoadout.cache = {}
 
 -- safe guard against spam
 CLoadout.cooldown = {}
+CLoadout.spamCount = {}
 
 function CLoadout:IsAvailableForPlayer( ply )
     -- builderx compatibility
@@ -114,12 +115,20 @@ function CLoadout:ReceiveData( len, ply )
     local t = RealTime()
 
     if self.cooldown[steamId] and self.cooldown[steamId] > t then
+        local count = self.spamCount[steamId] + 1
+        self.spamCount[steamId] = count
+
         CLoadout.PrintF( "%s <%s> has sent loadout data too fast!", ply:Nick(), steamId )
+
+        if count > 3 then
+            RunConsoleCommand( "kickid", steamId )
+        end
 
         return
     end
 
     self.cooldown[steamId] = t + 1
+    self.spamCount[steamId] = 0
 
     local data = net.ReadData( len )
     data = util.Decompress( data )
@@ -188,6 +197,7 @@ hook.Add( "PlayerDisconnected", "CLoadout_ClearCache", function( ply )
 
     if CLoadout.cooldown[steamId] then
         CLoadout.cooldown[steamId] = nil
+        CLoadout.spamCount[steamId] = nil
     end
 end )
 
