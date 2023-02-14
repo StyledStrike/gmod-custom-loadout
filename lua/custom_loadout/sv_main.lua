@@ -95,11 +95,11 @@ end
 function CLoadout:Apply( ply )
     if not self:IsAvailableForPlayer( ply ) then return end
 
-    local steam_id = ply:SteamID()
+    local steamId = ply:SteamID()
 
     -- timers were used here just to override other addon"s shenanigans
 
-    if self.cache[steam_id] and self.cache[steam_id].enabled then
+    if self.cache[steamId] and self.cache[steamId].enabled then
         timer.Simple( 0.1, function() CLoadout:GiveWeapons( ply ) end )
 
         return true
@@ -112,7 +112,7 @@ function CLoadout:ReceiveData( len, ply )
 
     if not data or data == "" then return end
 
-    local steam_id = ply:SteamID()
+    local steamId = ply:SteamID()
     local loadout = util.JSONToTable( data )
 
     if not loadout then
@@ -121,7 +121,7 @@ function CLoadout:ReceiveData( len, ply )
         return
     end
 
-    self.cache[steam_id] = {
+    self.cache[steamId] = {
         enabled = loadout.enabled,
         preferred = loadout.preferred,
         items = {}
@@ -133,7 +133,7 @@ function CLoadout:ReceiveData( len, ply )
     local maxItems = cvarWeaponLimit:GetInt()
     local count = 0
 
-    -- filter inexistent weapons
+    -- filter inexistent weapons, and limit the items
     for _, item in ipairs( loadout.items ) do
         count = count + 1
         if count > maxItems then break end
@@ -142,11 +142,11 @@ function CLoadout:ReceiveData( len, ply )
 
         if swep then
             table.insert(
-                self.cache[steam_id].items,
+                self.cache[steamId].items,
                 {
-                    item[1],                    -- class
-                    tonumber( item[2] ) or 0,   -- primary ammo
-                    tonumber( item[3] ) or 0    -- secondary ammo
+                    item[1],                  -- class
+                    tonumber( item[2] ) or 0, -- primary ammo
+                    tonumber( item[3] ) or 0  -- secondary ammo
                 }
             )
         end
