@@ -121,7 +121,7 @@ function CLoadout:ReceiveData( len, ply )
         CLoadout.PrintF( "%s <%s> has sent loadout data too fast!", ply:Nick(), steamId )
 
         if count > 3 then
-            RunConsoleCommand( "kickid", steamId )
+            ply:Kick( "[Custom Loadout] Net spam" )
         end
 
         return
