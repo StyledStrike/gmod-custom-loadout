@@ -209,7 +209,7 @@ hook.Add( "PlayerLoadout", "CLoadout_ApplyLoadout", function( ply )
 end )
 
 -- apply the loadout when leaving build mode (builderx)
-hook.Add( "builderx.mode.onswitch", "CLoadout_ApplyLoadoutOnExitBuild", function( ply, bIsBuild )
+hook.Add( "builderx.pl.onswitch", "CLoadout_ApplyLoadoutOnExitBuild", function( ply, bIsBuild )
     if not bIsBuild then
         CLoadout:Apply( ply )
     end
