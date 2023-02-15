@@ -9,6 +9,14 @@ function CLoadout.PrintF( str, ... )
     MsgC( Color( 255, 94, 0 ), "[Custom Loadout] ", Color( 255, 255, 255 ), string.format( str, ... ), "\n" )
 end
 
+function CLoadout:GetWeaponLimit()
+    if game.SinglePlayer() then return 200 end
+
+    local cvarWeaponLimit = GetConVar( "custom_loadout_max_items" )
+
+    return cvarWeaponLimit and cvarWeaponLimit:GetInt() or 40
+end
+
 function CLoadout:IsBlacklisted( ply, class )
     local blacklisted = hook.Run( "CustomLoadout.IsWeaponBlacklisted", ply, class )
     if tobool( blacklisted ) then return true end

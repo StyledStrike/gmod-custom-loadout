@@ -16,13 +16,15 @@ local cvarSecondaryLimit = CreateConVar(
     0, 9999
 )
 
-local cvarWeaponLimit = CreateConVar(
-    "custom_loadout_max_items",
-    "40",
-    bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
-    "[Custom Loadout] Limits how many weapons a single loadout can have.",
-    0, 100
-)
+if not game.SinglePlayer() then
+    CreateConVar(
+        "custom_loadout_max_items",
+        "40",
+        bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
+        "[Custom Loadout] Limits how many weapons a single loadout can have.",
+        0, 100
+    )
+end
 
 -- store player loadouts
 CLoadout.cache = {}
@@ -152,7 +154,7 @@ function CLoadout:ReceiveData( len, ply )
     -- no need to go further if the loadout is not enabled
     if not loadout.enabled then return end
 
-    local maxItems = cvarWeaponLimit:GetInt()
+    local maxItems = self:GetWeaponLimit()
     local count = 0
 
     -- filter inexistent weapons, and limit the items

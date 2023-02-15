@@ -64,12 +64,6 @@ function CLoadout:InitRegistry()
     self.weaponRegistry = registry
 end
 
-function CLoadout:GetWeaponLimit()
-    local cvarWeaponLimit = GetConVar( "custom_loadout_max_items" )
-
-    return cvarWeaponLimit and cvarWeaponLimit:GetInt() or 25
-end
-
 function CLoadout:GetAmmoLimits()
     local cvarPrimaryLimit = GetConVar( "custom_loadout_primary_limit" )
     local cvarSecondaryLimit = GetConVar( "custom_loadout_secondary_limit" )
