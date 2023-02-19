@@ -141,6 +141,9 @@ function CLoadout:UpdateAvailableList()
         -- dont list weapons that are on the loadout already
         if isOnLoadout( class ) then continue end
 
+        -- dont list weapons that dont match the category filter
+        if self.categoryFilter and v.category ~= self.categoryFilter then continue end
+
         -- dont list weapons that dont match the search filter
         if self.filter ~= "" then
             local foundClass = string.find( class, self.filter, 1, true )
@@ -159,12 +162,12 @@ function CLoadout:UpdateAvailableList()
             icon:SetTooltip( langGet( "cloadout.weapon_unavailable" ) )
         end
 
-        if v.admin_only then
+        if v.adminOnly then
             icon:SetAdminOnly( true )
         end
 
         icon.DoClick = function()
-            if v.admin_only and not localPly:IsAdmin() then
+            if v.adminOnly and not localPly:IsAdmin() then
                 Derma_Message(
                     langGet( "cloadout.admin_only" ),
                     langGet( "cloadout.weapon_restricted" ),
@@ -257,7 +260,7 @@ function CLoadout:UpdateLoadoutList()
             continue
         end
 
-        if regWeapon.admin_only then
+        if regWeapon.adminOnly then
             icon:SetAdminOnly( true )
         end
 
@@ -376,13 +379,40 @@ function CLoadout:ShowPanel()
 
     ----- LEFT PANEL STUFF
 
-    local labelAvailable = vgui.Create( "DLabel", leftPanel )
-    labelAvailable:SetText( langGet( "cloadout.available_weapons" ) )
-    labelAvailable:SetFont( "Trebuchet24" )
-    labelAvailable:SetTextColor( Color( 150, 255, 150 ) )
-    labelAvailable:Dock( TOP )
-    labelAvailable:DockMargin( 4, 2, 0, 2 )
+    -- category combo
+    self.comboCategory = vgui.Create( "DComboBox", leftPanel )
+    self.comboCategory:SetFont( "Trebuchet24" )
+    self.comboCategory:SetSortItems( false )
+    self.comboCategory:SetTextColor( Color( 150, 255, 150 ) )
+    self.comboCategory:SetTall( 30 )
+    self.comboCategory:Dock( TOP )
+    self.comboCategory:DockMargin( 2, 2, 2, 2 )
 
+    self.comboCategory:AddChoice( langGet( "cloadout.available_weapons" ), nil, true )
+
+    for _, name in ipairs( self.categories ) do
+        self.comboCategory:AddChoice( name )
+    end
+
+    self.comboCategory.Paint = function( _, sw, sh )
+        surface.SetDrawColor( 0, 0, 0, 240 )
+        surface.DrawRect( 0, 0, sw, sh )
+    end
+
+    self.comboCategory.OnSelect = function( _, index )
+        -- wtf, sometimes "index" is a string
+        index = tonumber( index ) - 1
+
+        if index == 0 then
+            self.categoryFilter = nil
+        else
+            self.categoryFilter = self.categories[index]
+        end
+
+        self:UpdateLists()
+    end
+
+    -- search box
     local entrySearch = vgui.Create( "DTextEntry", leftPanel )
     entrySearch:SetFont( "ChatFont" )
     entrySearch:SetMaximumCharCount( 64 )

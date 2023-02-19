@@ -1,16 +1,22 @@
 function CLoadout:InitRegistry()
     local registry = {}
+    local categories = {}
 
     for _, v in pairs( list.Get( "Weapon" ) ) do
-        if not v.ClassName then continue end
-        --if not v.Spawnable then continue end
+        if not v.ClassName or not v.Spawnable then continue end
 
-        -- dont list "base" class weapons
-        if string.find( v.ClassName, "_base", 1, true ) then continue end
+        local cat = v.Category or "-"
+
+        if not isstring( cat ) then
+            cat = tostring( cat )
+        end
+
+        categories[cat] = true
 
         registry[v.ClassName] = {
-            admin_only = v.AdminOnly,
-            name = ( v.PrintName and v.PrintName ~= "" ) and v.PrintName or v.ClassName
+            adminOnly = v.AdminOnly,
+            name = ( v.PrintName and v.PrintName ~= "" ) and v.PrintName or v.ClassName,
+            category = cat
         }
 
         if v.Primary and not v.Primary.ClipSize then
@@ -22,7 +28,10 @@ function CLoadout:InitRegistry()
         end
     end
 
+    self.categories = table.GetKeys( categories )
     self.weaponRegistry = registry
+
+    table.sort( self.categories )
 end
 
 function CLoadout:GetAmmoLimits()
