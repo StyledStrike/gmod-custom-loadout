@@ -12,6 +12,7 @@ end
 
 function CLoadout:OpenMenuForIcon( icon )
     local class = icon.WeaponClass
+    local item = self.loadouts[self.loadoutIndex].items[icon._itemIndex]
 
     local ammoFrame = vgui.Create( "DFrame" )
     ammoFrame:SetSize( 500, 168 )
@@ -33,22 +34,24 @@ function CLoadout:OpenMenuForIcon( icon )
     container:Dock( FILL )
     container:DockPadding( 8, 8, 8, 8 )
 
-    local btnPrefer = container:Add( "DButton" )
-    btnPrefer:SetIcon( "icon16/award_star_gold_3.png" )
-    btnPrefer:Dock( TOP )
+    if item then
+        local btnPrefer = container:Add( "DButton" )
+        btnPrefer:SetIcon( "icon16/award_star_gold_3.png" )
+        btnPrefer:Dock( TOP )
 
-    if icon:GetFavorite() then
-        btnPrefer:SetText( langGet( "cloadout.favorite_weapon" ) )
-        btnPrefer:SetEnabled( false )
-    else
-        btnPrefer:SetText( langGet( "cloadout.set_favorite_weapon" ) )
-
-        btnPrefer.DoClick = function()
+        if icon:GetFavorite() then
             btnPrefer:SetText( langGet( "cloadout.favorite_weapon" ) )
             btnPrefer:SetEnabled( false )
-            preview:SetFavorite( true )
+        else
+            btnPrefer:SetText( langGet( "cloadout.set_favorite_weapon" ) )
 
-            self:PreferWeapon( class )
+            btnPrefer.DoClick = function()
+                btnPrefer:SetText( langGet( "cloadout.favorite_weapon" ) )
+                btnPrefer:SetEnabled( false )
+                preview:SetFavorite( true )
+
+                self:PreferWeapon( class )
+            end
         end
     end
 
@@ -61,9 +64,7 @@ function CLoadout:OpenMenuForIcon( icon )
     end
 
     local regWeapon = self.weaponRegistry[class]
-    if not regWeapon then return end
-
-    local item = self.loadouts[self.loadoutIndex].items[icon._itemIndex]
+    if not regWeapon or not item then return end
 
     local function createSlider( label, value, max )
         local slider = container:Add( "DNumSlider" )
