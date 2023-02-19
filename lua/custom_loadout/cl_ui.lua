@@ -142,8 +142,9 @@ function CLoadout:UpdateAvailableList()
 
         -- dont list weapons that dont match the search filter
         if self.filter ~= "" then
-            local found = string.find( string.lower( v.name ), self.filter, 1, true )
-            if not found then continue end
+            local foundClass = string.find( class, self.filter, 1, true )
+            local foundName = string.find( string.lower( v.name ), self.filter, 1, true )
+            if not foundClass and not foundName then continue end
         end
 
         v.blacklisted = self:IsBlacklisted( localPly, class )
