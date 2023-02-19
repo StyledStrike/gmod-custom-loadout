@@ -1,46 +1,7 @@
 function CLoadout:InitRegistry()
-    -- weapons that cant be automatically listed by code
-    local registry = {
-        ["weapon_crowbar"] = { name = "Crowbar", noPrimary = true, noSecondary = true },
-        ["weapon_stunstick"] = { name = "Stunstick", noPrimary = true, noSecondary = true },
-        ["weapon_physcannon"] = { name = "Gravity Gun", noPrimary = true, noSecondary = true },
-        ["weapon_physgun"] = { name = "Physics Gun", noPrimary = true, noSecondary = true },
-        ["weapon_pistol"] = { name = "9mm Pistol", noSecondary = true },
-        ["weapon_357"] = { name = ".357 Magnum", noSecondary = true },
-        ["weapon_smg1"] = { name = "SMG" },
-        ["weapon_ar2"] = { name = "Pulse-Rifle" },
-        ["weapon_shotgun"] = { name = "Shotgun", noSecondary = true },
-        ["weapon_crossbow"] = { name = "Crossbow", noSecondary = true },
-        ["weapon_frag"] = { name = "Grenade", noSecondary = true },
-        ["weapon_rpg"] = { name = "RPG", noSecondary = true },
-        ["weapon_slam"] = { name = "S.L.A.M", noPrimary = true },
-        ["weapon_bugbait"] = { name = "Bug Bait", noPrimary = true, noSecondary = true },
-        ["weapon_alyxgun"] = { name = "Alyx Gun" },
-        ["weapon_annabelle"] = { name = "Annabelle" }
-    }
+    local registry = {}
 
-    -- half life: source (if mounted)
-    if IsMounted( "hl1" ) or IsMounted( "hl1mp" ) then
-        registry["weapon_crowbar_hl1"] = { name = "Crowbar (HL1)", noPrimary = true, noSecondary = true }
-        registry["weapon_glock_hl1"] = { name = "Glock (HL1)", noSecondary = true }
-        registry["weapon_egon"] = { name = "Gluon Gun (HL1)", noSecondary = true }
-        registry["weapon_gauss"] = { name = "Tau Cannon (HL1)", noSecondary = true }
-        registry["weapon_357_hl1"] = { name = ".357 Handgun (HL1)", noSecondary = true }
-        registry["weapon_mp5_hl1"] = { name = "MP5 (HL1)" }
-        registry["weapon_shotgun_hl1"] = { name = "SPAS-12 (HL1)", noSecondary = true }
-        registry["weapon_crossbow_hl1"] = { name = "Crossbow (HL1)", noSecondary = true }
-        registry["weapon_handgrenade"] = { name = "Hand Grenade (HL1)", noSecondary = true }
-        registry["weapon_hornetgun"] = { name = "Hornet Gun (HL1)" }
-        registry["weapon_rpg_hl1"] = { name = "RPG Launcher (HL1)" }
-        registry["weapon_satchel"] = { name = "Satchel (HL1)", noSecondary = true }
-        registry["weapon_snark"] = { name = "Snarks (HL1)", noSecondary = true }
-        registry["weapon_tripmine"] = { name = "Tripmine (HL1)", noSecondary = true }
-    end
-
-    -- add scripted weapons (aka SWEPs) to our registry
-    -- (note: "engine" weapons arent listed here,
-    -- so we had to manually add them earlier)
-    for _, v in pairs( weapons.GetList() ) do
+    for _, v in pairs( list.Get( "Weapon" ) ) do
         if not v.ClassName then continue end
         --if not v.Spawnable then continue end
 
