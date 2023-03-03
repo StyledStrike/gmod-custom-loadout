@@ -201,7 +201,7 @@ function CLoadout:Load()
 
     local data = file.Read( "custom_loadout.txt", "DATA" )
     if not data or data == "" then
-        Loadout.PrintF( "No Custom Loadout data on disk." )
+        CLoadout.PrintF( "No Custom Loadout data on disk." )
         return
     end
 
