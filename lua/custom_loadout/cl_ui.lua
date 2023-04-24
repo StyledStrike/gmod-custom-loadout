@@ -11,6 +11,10 @@ function CLoadout:GetWeaponIcon( class )
 end
 
 function CLoadout:OpenMenuForIcon( icon )
+    if IsValid( self.ammoFrame ) then
+        self.ammoFrame:Close()
+    end
+
     local class = icon.WeaponClass
     local item = self.loadouts[self.loadoutIndex].items[icon._itemIndex]
 
@@ -46,10 +50,7 @@ function CLoadout:OpenMenuForIcon( icon )
             btnPrefer:SetText( langGet( "cloadout.set_favorite_weapon" ) )
 
             btnPrefer.DoClick = function()
-                btnPrefer:SetText( langGet( "cloadout.favorite_weapon" ) )
-                btnPrefer:SetEnabled( false )
-                preview:SetFavorite( true )
-
+                self.reopenMenuForClass = class
                 self:PreferWeapon( class )
             end
         end
@@ -242,9 +243,7 @@ function CLoadout:UpdateLoadoutList()
 
         local regWeapon = self.weaponRegistry[class]
 
-        if regWeapon then
-            icon:SetWeaponName( regWeapon.name )
-        else
+        if not regWeapon then
             if not self.hintedMissingWeapons then
                 self.hintedMissingWeapons = true
                 Derma_Message(
@@ -260,6 +259,8 @@ function CLoadout:UpdateLoadoutList()
             continue
         end
 
+        icon:SetWeaponName( regWeapon.name )
+
         if regWeapon.adminOnly then
             icon:SetAdminOnly( true )
         end
@@ -270,6 +271,10 @@ function CLoadout:UpdateLoadoutList()
 
         if not regWeapon.noSecondary then
             icon.Secondary = item[3]
+        end
+
+        if class == self.reopenMenuForClass then
+            self:OpenMenuForIcon( icon )
         end
     end
 
