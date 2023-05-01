@@ -189,9 +189,7 @@ end
 
 -- updates the list of available weapons
 function CLoadout:UpdateAvailableList()
-    for _, v in ipairs( self.listAvailable:GetChildren() ) do
-        v:Remove()
-    end
+    self.listAvailable:Clear()
 
     local items = self.loadouts[self.loadoutIndex].items
 
@@ -225,10 +223,7 @@ function CLoadout:UpdateLoadoutList()
     end
 
     self.comboLoadouts._blockCallback = nil
-
-    for _, v in ipairs( self.listLoadoutItems:GetChildren() ) do
-        v:Remove()
-    end
+    self.listLoadoutItems:Clear()
 
     local items = self.loadouts[self.loadoutIndex].items
     local preferred = self.loadouts[self.loadoutIndex].preferred
