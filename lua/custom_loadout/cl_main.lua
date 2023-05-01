@@ -127,7 +127,6 @@ function CLoadout:AddWeapon( class )
 
     if #items < self:GetWeaponLimit() then
         table.insert( items, { class, 200, 1 } )
-        self:UpdateLists()
     else
         Derma_Message( "#cloadout.weapon_limit", "#cloadout.title", "#cloadout.ok" )
     end
@@ -162,7 +161,6 @@ end
 
 function CLoadout:RemoveWeapon( index )
     table.remove( self.loadouts[self.loadoutIndex].items, index )
-    self:UpdateLists()
 end
 
 function CLoadout:PreferWeapon( class )

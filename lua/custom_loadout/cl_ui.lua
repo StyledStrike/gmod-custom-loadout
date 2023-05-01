@@ -123,6 +123,70 @@ function CLoadout:UpdateLists()
     end
 end
 
+function CLoadout:CreateAvailableWeaponIcon( class )
+    local weapon = self.weaponRegistry[class]
+
+    -- dont list weapons that dont match the category filter
+    if self.categoryFilter and weapon.category ~= self.categoryFilter then return end
+
+    -- dont list weapons that dont match the search filter
+    if self.filter ~= "" then
+        local foundClass = string.find( class, self.filter, 1, true )
+        local foundName = string.find( string.lower( weapon.name ), self.filter, 1, true )
+        if not foundClass and not foundName then return end
+    end
+
+    local localPly = LocalPlayer()
+
+    weapon.blacklisted = self:IsBlacklisted( localPly, class )
+
+    local icon = self.listAvailable:Add( "CLoadoutWeaponIcon" )
+    icon:SetWeaponName( weapon.name )
+    icon:SetWeaponClass( class )
+
+    if weapon.blacklisted then
+        icon:SetBlacklisted( true )
+        icon:SetTooltip( langGet( "cloadout.weapon_unavailable" ) )
+    end
+
+    if weapon.adminOnly then
+        icon:SetAdminOnly( true )
+    end
+
+    icon.DoClick = function()
+        if weapon.adminOnly and not localPly:IsAdmin() then
+            Derma_Message(
+                langGet( "cloadout.admin_only" ),
+                langGet( "cloadout.weapon_restricted" ),
+                langGet( "cloadout.ok" )
+            )
+
+        elseif weapon.blacklisted then
+            Derma_Message(
+                langGet( "cloadout.weapon_unavailable" ),
+                langGet( "cloadout.weapon_restricted" ),
+                langGet( "cloadout.ok" )
+            )
+
+        else
+            self:AddWeapon( class )
+            self:UpdateLoadoutList()
+            icon:Remove()
+        end
+    end
+
+    icon.OpenMenu = function()
+        local menu = DermaMenu()
+
+        menu:AddOption(
+            langGet( "cloadout.copy_to_clipboard" ),
+            function() SetClipboardText( class ) end
+        )
+
+        menu:Open()
+    end
+end
+
 -- updates the list of available weapons
 function CLoadout:UpdateAvailableList()
     for _, v in ipairs( self.listAvailable:GetChildren() ) do
@@ -130,7 +194,6 @@ function CLoadout:UpdateAvailableList()
     end
 
     local items = self.loadouts[self.loadoutIndex].items
-    local localPly = LocalPlayer()
 
     local function isOnLoadout( class )
         for _, item in ipairs( items ) do
@@ -138,64 +201,9 @@ function CLoadout:UpdateAvailableList()
         end
     end
 
-    for class, v in SortedPairsByMemberValue( self.weaponRegistry, "name" ) do
-        -- dont list weapons that are on the loadout already
-        if isOnLoadout( class ) then continue end
-
-        -- dont list weapons that dont match the category filter
-        if self.categoryFilter and v.category ~= self.categoryFilter then continue end
-
-        -- dont list weapons that dont match the search filter
-        if self.filter ~= "" then
-            local foundClass = string.find( class, self.filter, 1, true )
-            local foundName = string.find( string.lower( v.name ), self.filter, 1, true )
-            if not foundClass and not foundName then continue end
-        end
-
-        v.blacklisted = self:IsBlacklisted( localPly, class )
-
-        local icon = self.listAvailable:Add( "CLoadoutWeaponIcon" )
-        icon:SetWeaponName( v.name )
-        icon:SetWeaponClass( class )
-
-        if v.blacklisted then
-            icon:SetBlacklisted( true )
-            icon:SetTooltip( langGet( "cloadout.weapon_unavailable" ) )
-        end
-
-        if v.adminOnly then
-            icon:SetAdminOnly( true )
-        end
-
-        icon.DoClick = function()
-            if v.adminOnly and not localPly:IsAdmin() then
-                Derma_Message(
-                    langGet( "cloadout.admin_only" ),
-                    langGet( "cloadout.weapon_restricted" ),
-                    langGet( "cloadout.ok" )
-                )
-
-            elseif v.blacklisted then
-                Derma_Message(
-                    langGet( "cloadout.weapon_unavailable" ),
-                    langGet( "cloadout.weapon_restricted" ),
-                    langGet( "cloadout.ok" )
-                )
-
-            else
-                self:AddWeapon( class )
-            end
-        end
-
-        icon.OpenMenu = function()
-            local menu = DermaMenu()
-
-            menu:AddOption(
-                langGet( "cloadout.copy_to_clipboard" ),
-                function() SetClipboardText( class ) end
-            )
-
-            menu:Open()
+    for class, _ in SortedPairsByMemberValue( self.weaponRegistry, "name" ) do
+        if not isOnLoadout( class ) then
+            self:CreateAvailableWeaponIcon( class )
         end
     end
 
@@ -234,6 +242,8 @@ function CLoadout:UpdateLoadoutList()
 
         icon.DoClick = function()
             self:RemoveWeapon( index )
+            self:CreateAvailableWeaponIcon( class )
+            icon:Remove()
         end
 
         if preferred == class then
