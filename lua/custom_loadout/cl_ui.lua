@@ -191,16 +191,14 @@ end
 function CLoadout:UpdateAvailableList()
     self.listAvailable:Clear()
 
-    local items = self.loadouts[self.loadoutIndex].items
+    local inLoadout = {}
 
-    local function isOnLoadout( class )
-        for _, item in ipairs( items ) do
-            if item[1] == class then return true end
-        end
+    for _, item in ipairs( self.loadouts[self.loadoutIndex].items ) do
+        inLoadout[item[1]] = true
     end
 
     for class, _ in SortedPairsByMemberValue( self.weaponRegistry, "name" ) do
-        if not isOnLoadout( class ) then
+        if not inLoadout[class] then
             self:CreateAvailableWeaponIcon( class )
         end
     end
