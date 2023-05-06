@@ -125,6 +125,7 @@ end
 
 function CLoadout:CreateAvailableWeaponIcon( class )
     local weapon = self.weaponRegistry[class]
+    if not weapon then return end
 
     -- dont list weapons that dont match the category filter
     if self.categoryFilter and weapon.category ~= self.categoryFilter then return end
