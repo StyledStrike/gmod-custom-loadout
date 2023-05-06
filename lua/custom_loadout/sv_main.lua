@@ -103,8 +103,7 @@ function CLoadout:Apply( ply )
 
     local steamId = ply:SteamID()
 
-    -- timers were used here just to override other addon"s shenanigans
-
+    -- a timer is used here just to override other addon's shenanigans
     if self.cache[steamId] and self.cache[steamId].enabled then
         timer.Simple( 0.1, function() CLoadout:GiveWeapons( ply ) end )
 
@@ -206,7 +205,7 @@ end )
 -- apply the loadout
 hook.Add( "PlayerLoadout", "CLoadout_ApplyLoadout", function( ply )
     return CLoadout:Apply( ply )
-end )
+end, HOOK_HIGH )
 
 -- apply the loadout when leaving build mode (builderx)
 hook.Add( "builderx.pl.onswitch", "CLoadout_ApplyLoadoutOnExitBuild", function( ply, bIsBuild )
