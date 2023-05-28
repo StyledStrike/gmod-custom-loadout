@@ -206,7 +206,7 @@ function CLoadout:Load()
     data = util.JSONToTable( data )
 
     if not data then
-        Loadout.PrintF( "Failed to parse the loadout data!" )
+        CLoadout.PrintF( "Failed to parse the loadout data!" )
         return
     end
 
