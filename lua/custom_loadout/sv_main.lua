@@ -34,6 +34,10 @@ CLoadout.cooldown = {}
 CLoadout.spamCount = {}
 
 function CLoadout:IsAvailableForPlayer( ply )
+    if not IsValid( ply ) then
+        return false
+    end
+
     -- builderx compatibility
     if ply.GetBuild and ply:GetBuild() then
         return false, "Your loadout will be applied once you leave build mode."
