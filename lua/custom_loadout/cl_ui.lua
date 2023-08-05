@@ -278,6 +278,7 @@ function CLoadout:UpdateLoadoutList()
         end
 
         if class == self.reopenMenuForClass then
+            self.reopenMenuForClass = nil
             self:OpenMenuForIcon( icon )
         end
     end
