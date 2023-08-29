@@ -292,6 +292,12 @@ function CLoadout:UpdateLoadoutList()
 end
 
 function CLoadout:ShowPanel()
+    if not self.categories then
+        CLoadout.PrintF( "Too early! Weapons have not been loaded and categorized yet!" )
+
+        return
+    end
+
     if IsValid( self.frame ) then
         self.frame:Close()
         self.frame = nil
