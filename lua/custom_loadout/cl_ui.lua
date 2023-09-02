@@ -769,7 +769,17 @@ do
         render.PushFilterMag( TEXFILTER.ANISOTROPIC )
         render.PushFilterMin( TEXFILTER.ANISOTROPIC )
 
-        self.Image:PaintAt( self.Border, self.Border, w - self.Border * 2, h - self.Border * 2 )
+        local ok, err = xpcall(
+            self.Image.PaintAt,
+            debug.traceback,
+            self.Image,
+            self.Border,
+            self.Border,
+            w - self.Border * 2,
+            h - self.Border * 2
+        )
+
+        if not ok then print( err ) end
 
         render.PopFilterMin()
         render.PopFilterMag()
