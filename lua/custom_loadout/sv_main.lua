@@ -1,31 +1,5 @@
 util.AddNetworkString( "cloadout.apply" )
 
-local cvarPrimaryLimit = CreateConVar(
-    "custom_loadout_primary_limit",
-    "5000",
-    bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
-    "[Custom Loadout] Limits how much primary ammo is given to players.",
-    0, 9999
-)
-
-local cvarSecondaryLimit = CreateConVar(
-    "custom_loadout_secondary_limit",
-    "50",
-    bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
-    "[Custom Loadout] Limits how much secondary ammo is given to players.",
-    0, 9999
-)
-
-if not game.SinglePlayer() then
-    CreateConVar(
-        "custom_loadout_max_items",
-        "40",
-        bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
-        "[Custom Loadout] Limits how many weapons a single loadout can have.",
-        0, 100
-    )
-end
-
 -- store player loadouts
 CLoadout.cache = {}
 
@@ -58,8 +32,8 @@ function CLoadout:GiveWeapons( ply )
 
     ply:StripAmmo()
 
-    local maxPrimary = cvarPrimaryLimit:GetInt()
-    local maxSecondary = cvarSecondaryLimit:GetInt()
+    local maxPrimary = GetConVar( "custom_loadout_primary_limit" ):GetInt()
+    local maxSecondary = GetConVar( "custom_loadout_secondary_limit" ):GetInt()
 
     local preferredWeapon
 

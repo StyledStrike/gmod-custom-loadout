@@ -3,6 +3,30 @@
     https://github.com/StyledStrike/gmod-custom-loadout
 ]]
 
+CreateConVar(
+    "custom_loadout_max_items",
+    "40",
+    bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
+    "Limits how many weapons a single loadout can have.",
+    0, 100
+)
+
+CreateConVar(
+    "custom_loadout_primary_limit",
+    "5000",
+    bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
+    "Limits how much primary ammo is given to players.",
+    0, 9999
+)
+
+CreateConVar(
+    "custom_loadout_secondary_limit",
+    "50",
+    bit.bor( FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY ),
+    "Limits how much secondary ammo is given to players.",
+    0, 9999
+)
+
 CLoadout = {}
 
 function CLoadout.PrintF( str, ... )
