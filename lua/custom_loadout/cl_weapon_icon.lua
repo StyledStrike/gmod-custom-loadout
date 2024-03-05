@@ -25,6 +25,9 @@ function WeaponIcon:Init()
 
     self.WeaponName = ""
     self.WeaponClass = ""
+    self.IconPath = nil
+    self.LastIconPath = nil
+
     self.Border = 0
     self.TextColor = Color( 255, 255, 255, 255 )
     self.TextOutlineColor = Color( 0, 0, 0, 255 )
@@ -37,28 +40,14 @@ end
 function WeaponIcon:SetWeaponClass( class )
     self.WeaponClass = class
 
-    local icon_path = CLoadout:GetWeaponIcon( class )
-    if icon_path then
-        self:SetMaterial( icon_path )
+    local iconPath = CLoadout:GetWeaponIcon( class )
+    if iconPath then
+        self:SetMaterial( iconPath )
     end
 end
 
-function WeaponIcon:SetMaterial( name )
-    self.m_MaterialName = name
-
-    local mat = Material( name )
-
-    -- Look for the old style material
-    if not mat or mat:IsError() then
-        name = name:Replace( "entities/", "VGUI/entities/" )
-        name = name:Replace( ".png", "" )
-        mat = Material( name )
-    end
-
-    -- Couldn"t find any material.. just return
-    if not mat or mat:IsError() then return end
-
-    self.Image:SetMaterial( mat )
+function WeaponIcon:SetMaterial( path )
+    self.IconPath = path
 end
 
 function WeaponIcon:DoRightClick()
@@ -71,6 +60,23 @@ function WeaponIcon:PaintOver() end
 
 function WeaponIcon:Paint( w, h )
     self.Border = self.Depressed and 8 or 0
+
+    if self.IconPath ~= self.LastIconPath then
+        self.LastIconPath = self.IconPath
+
+        local path = self.IconPath
+        local mat = Material( path )
+
+        if not mat or mat:IsError() then
+            path = path:Replace( "entities/", "VGUI/entities/" )
+            path = path:Replace( ".png", "" )
+            mat = Material( path )
+        end
+
+        if mat and not mat:IsError() then
+            self.Image:SetMaterial( mat )
+        end
+    end
 
     render.PushFilterMag( TEXFILTER.ANISOTROPIC )
     render.PushFilterMin( TEXFILTER.ANISOTROPIC )

@@ -74,5 +74,6 @@ end
 
 if CLIENT then
     include( "custom_loadout/cl_main.lua" )
+    include( "custom_loadout/cl_weapon_icon.lua" )
     include( "custom_loadout/cl_ui.lua" )
 end
