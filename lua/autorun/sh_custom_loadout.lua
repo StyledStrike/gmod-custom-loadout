@@ -68,6 +68,7 @@ if SERVER then
     include( "custom_loadout/sv_main.lua" )
 
     AddCSLuaFile( "custom_loadout/cl_main.lua" )
+    AddCSLuaFile( "custom_loadout/cl_weapon_icon.lua" )
     AddCSLuaFile( "custom_loadout/cl_ui.lua" )
 
     resource.AddSingleFile( "resource/localization/en/custom_loadout.properties" )
