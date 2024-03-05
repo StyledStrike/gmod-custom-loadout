@@ -70,11 +70,6 @@ if SERVER then
     AddCSLuaFile( "custom_loadout/cl_main.lua" )
     AddCSLuaFile( "custom_loadout/cl_weapon_icon.lua" )
     AddCSLuaFile( "custom_loadout/cl_ui.lua" )
-
-    resource.AddSingleFile( "resource/localization/en/custom_loadout.properties" )
-    resource.AddSingleFile( "resource/localization/fr/custom_loadout.properties" )
-    resource.AddSingleFile( "resource/localization/pt-br/custom_loadout.properties" )
-    resource.AddSingleFile( "resource/localization/ru/custom_loadout.properties" )
 end
 
 if CLIENT then
