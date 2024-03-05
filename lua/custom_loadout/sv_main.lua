@@ -1,3 +1,4 @@
+resource.AddWorkshop( "2675972006" )
 util.AddNetworkString( "cloadout.apply" )
 
 -- store player loadouts
