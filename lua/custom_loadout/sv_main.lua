@@ -18,6 +18,10 @@ function CLoadout:IsAvailableForPlayer( ply )
         return false, "Your loadout will be applied once you leave build mode."
     end
 
+    if hook.Run( "CLoadoutCanGiveWeapons", ply ) == false then
+        return false
+    end
+
     return true
 end
 
@@ -156,11 +160,11 @@ function CLoadout:ReceiveData( len, ply )
 
     local canUse, reason = self:IsAvailableForPlayer( ply )
 
-    if not canUse then
+    if reason then
         ply:ChatPrint( "[Custom Loadout] " .. reason )
-
-        return
     end
+
+    if not canUse then return end
 
     self:GiveWeapons( ply )
 end
