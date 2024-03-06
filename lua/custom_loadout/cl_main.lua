@@ -198,6 +198,7 @@ function CLoadout:Load()
     if not file.Exists( "custom_loadout.txt", "DATA" ) then return end
 
     local data = file.Read( "custom_loadout.txt", "DATA" )
+
     if not data or data == "" then
         CLoadout.PrintF( "No Custom Loadout data on disk." )
         return
@@ -249,79 +250,3 @@ concommand.Add(
     nil,
     "Opens the loadout customization window."
 )
-
--- convert old save files to the new format
-do
-    local data = file.Read( "sanct_loadout.txt", "DATA" )
-    if not data or data == "" then return end
-
-    data = util.JSONToTable( data )
-
-    if not data then
-        Loadout.PrintF( "Failed to parse old loadout data!" )
-
-        return
-    end
-
-    local newData = {
-        enabled = false,
-        loadoutIndex = 1,
-        loadouts = {}
-    }
-
-    if data.enabled then
-        newData.enabled = true
-    end
-
-    if istable( data.loadouts ) and table.IsSequential( data.loadouts ) then
-        for _, v in ipairs( data.loadouts ) do
-            local loadout = {
-                name = "My Loadout",
-                items = {}
-            }
-
-            if v.name and isstring( v.name ) then
-                loadout.name = v.name
-            end
-
-            if v.preferred and isstring( v.preferred ) then
-                loadout.preferred = v.preferred
-            end
-
-            if istable( v.items ) and table.IsSequential( v.items ) then
-                for _, class in ipairs( v.items ) do
-                    loadout.items[#loadout.items + 1] = {
-                        class, 200, 1
-                    }
-                end
-            end
-
-            table.insert( newData.loadouts, loadout )
-        end
-    end
-
-    -- very old format (which only had a single loadout)
-    if istable( data.items ) and table.IsSequential( data.items ) then
-        local loadout = {
-            name = "Old Loadout",
-            items = {}
-        }
-
-        if data.preferred and isstring( data.preferred ) then
-            loadout.preferred = data.preferred
-        end
-
-        for _, class in ipairs( data.items ) do
-            loadout.items[#loadout.items + 1] = {
-                class, 200, 1
-            }
-        end
-
-        table.insert( newData.loadouts, loadout )
-    end
-
-    CLoadout.PrintF( "Converted old loadout data to the new format." )
-
-    file.Write( "custom_loadout.txt", util.TableToJSON( newData ) )
-    file.Delete( "sanct_loadout.txt" )
-end
