@@ -250,3 +250,15 @@ concommand.Add(
     nil,
     "Opens the loadout customization window."
 )
+
+if engine.ActiveGamemode() == "sandbox" then
+    list.Set(
+        "DesktopWindows",
+        "CLoadoutDesktopIcon",
+        {
+            title = language.GetPhrase( "cloadout.title" ),
+            icon = "entities/weapon_smg1.png",
+            init = function() CLoadout:ShowPanel() end
+        }
+    )
+end

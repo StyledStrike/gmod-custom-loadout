@@ -1,4 +1,5 @@
 resource.AddWorkshop( "2675972006" )
+
 util.AddNetworkString( "cloadout.apply" )
 
 -- store player loadouts
@@ -122,7 +123,7 @@ function CLoadout:ReceiveData( len, ply )
     local loadout = util.JSONToTable( data )
 
     if not loadout then
-        CLoadout.PrintF( "Failed to parse %s\"s loadout!", ply:Nick() )
+        CLoadout.PrintF( "Failed to parse %s's loadout!", ply:Nick() )
 
         return
     end
