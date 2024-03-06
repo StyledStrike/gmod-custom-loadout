@@ -138,9 +138,10 @@ function CLoadout:ShowPanel()
     self.comboCategory:DockMargin( 2, 2, 2, 2 )
 
     ApplyTheme( self.comboCategory )
-    self.comboCategory:SetTextColor( Color( 150, 255, 150 ) )
 
+    self.comboCategory:SetTextColor( Color( 150, 255, 150 ) )
     self.comboCategory:AddChoice( LangPhrase( "cloadout.available_weapons" ), nil, true )
+    self.categoryFilter = nil
 
     for _, name in ipairs( self.categories ) do
         self.comboCategory:AddChoice( name )
@@ -169,6 +170,7 @@ function CLoadout:ShowPanel()
     entrySearch:Dock( BOTTOM )
 
     ApplyTheme( entrySearch )
+    self.filter = ""
 
     entrySearch.OnChange = function( s )
         self.filter = string.lower( string.Trim( s:GetText() ) )
@@ -475,10 +477,8 @@ function CLoadout:UpdateLoadoutList()
         icon._itemIndex = index
 
         icon.DoClick = function()
-            icon:Remove()
-
             self:RemoveWeapon( index )
-            self:CreateAvailableWeaponIcon( class )
+            self:UpdateLists()
         end
 
         if preferred == class then
