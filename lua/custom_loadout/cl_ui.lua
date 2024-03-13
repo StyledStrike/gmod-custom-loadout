@@ -9,6 +9,10 @@ function CLoadout:GetWeaponIcon( class )
     if file.Exists( "materials/vgui/entities/" .. class .. ".vtf", "GAME" ) then
         return "vgui/entities/" .. class
     end
+
+    if file.Exists( "materials/vgui/entities/" .. class .. ".vmt", "GAME" ) then
+        return "vgui/entities/" .. class
+    end
 end
 
 function CLoadout:UpdateLists()
