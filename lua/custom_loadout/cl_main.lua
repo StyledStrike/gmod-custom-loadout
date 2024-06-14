@@ -184,7 +184,6 @@ function CLoadout:Init()
         self.frame = nil
     end
 
-    self:InitRegistry()
     self:Load()
 
     if #self.loadouts == 0 then

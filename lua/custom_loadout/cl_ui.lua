@@ -26,10 +26,14 @@ function CLoadout:UpdateLists()
 end
 
 function CLoadout:ShowPanel()
-    if not self.categories then
-        CLoadout.PrintF( "Too early! Weapons have not been loaded and categorized yet!" )
+    if not self.loadouts then
+        CLoadout.PrintF( "Too early! The addon is not prepared!" )
 
         return
+    end
+
+    if not self.categories then
+        self:InitRegistry()
     end
 
     if IsValid( self.frame ) then
