@@ -8,6 +8,7 @@ CLoadout.cache = {}
 -- safe guard against spam
 CLoadout.cooldown = {}
 CLoadout.spamCount = {}
+CLoadout.maxLength = 8192
 
 function CLoadout:IsAvailableForPlayer( ply )
     if not IsValid( ply ) then
@@ -108,6 +109,12 @@ function CLoadout:ReceiveData( len, ply )
         if count > 3 then
             ply:Kick( "[Custom Loadout] Net spam" )
         end
+
+        return
+    end
+
+    if len > CLoadout.maxLength then
+        CLoadout.PrintF( "%s <%s> has sent loadout data that was too big!", ply:Nick(), steamId )
 
         return
     end
