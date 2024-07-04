@@ -42,7 +42,7 @@ function CLoadout:GiveWeapons( ply )
     local maxPrimary = GetConVar( "custom_loadout_primary_limit" ):GetInt()
     local maxSecondary = GetConVar( "custom_loadout_secondary_limit" ):GetInt()
 
-    local preferredWeapon
+    local preferredWeapon = "weapon_physgun"
 
     for _, item in ipairs( items ) do
         local swep = list.Get( "Weapon" )[item[1]]
