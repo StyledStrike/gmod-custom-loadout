@@ -34,6 +34,24 @@ Returning `true` prevents the weapon from being given, and also marks them as un
 * The hook must be added on a shared realm (both on _CLIENT_ and _SERVER_)
 * It doesn't work in single player _(so if you need to test it, do it on a local, peer-to-peer or dedicated server instead.)_
 
+You can also override which weapon is preferred by using this hook:
+
+```lua
+hook.Add( "CLoadoutOverridePreferredWeapon", "OverridePreferredWeaponExample", function( ply, preferredClass )
+    -- With godmode, prefer to use the Physics Gun
+    if ply:HasGodMode() then
+        return "weapon_physgun"
+    end
+
+    -- You can return false instead to disable the automatic selection of
+    -- a preferred weapon, allowing you to do custom logic after a loadout is given
+    ply:Give( "weapon_physgun" )
+    ply:SelectWeapon( "weapon_physgun" )
+
+    return false
+end )
+```
+
 ## Contributing
 
 Please follow the [CFC style guidelines](https://github.com/CFC-Servers/cfc_glua_style_guidelines) before opening pull requests.
