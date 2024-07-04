@@ -78,6 +78,15 @@ function CLoadout:GiveWeapons( ply )
         end
     end
 
+    local preferredOverride = hook.Run( "CLoadoutOverridePreferredWeapon", ply, preferredWeapon )
+
+    if type( preferredOverride ) == "string" then
+        preferredWeapon = preferredOverride
+
+    elseif preferredOverride == false then
+        preferredWeapon = nil
+    end
+
     if preferredWeapon then
         ply:SelectWeapon( preferredWeapon )
     end
