@@ -67,15 +67,17 @@ end
 if SERVER then
     include( "custom_loadout/sv_main.lua" )
 
+    AddCSLuaFile( "includes/modules/styled_theme_utils.lua" )
+
     AddCSLuaFile( "custom_loadout/cl_main.lua" )
-    AddCSLuaFile( "custom_loadout/cl_theme.lua" )
     AddCSLuaFile( "custom_loadout/cl_weapon_icon.lua" )
     AddCSLuaFile( "custom_loadout/cl_ui.lua" )
 end
 
 if CLIENT then
+    require( "styled_theme_utils" )
+
     include( "custom_loadout/cl_main.lua" )
-    include( "custom_loadout/cl_theme.lua" )
     include( "custom_loadout/cl_weapon_icon.lua" )
     include( "custom_loadout/cl_ui.lua" )
 end

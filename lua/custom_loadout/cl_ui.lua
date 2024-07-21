@@ -1,4 +1,18 @@
-local ApplyTheme = CLoadout.Theme.Apply
+do
+    local MOTIF_COLOR = Color( 188, 86, 83, 255 )
+
+    local theme = STheme.New( {
+        frameTitleBar = MOTIF_COLOR,
+        buttonPress = MOTIF_COLOR,
+        entryHighlight = MOTIF_COLOR
+    } )
+
+    function CLoadout.ApplyTheme( panel )
+        STheme.Apply( theme, panel )
+    end
+end
+
+local ApplyTheme = CLoadout.ApplyTheme
 local LangPhrase = language.GetPhrase
 
 function CLoadout:GetWeaponIcon( class )
