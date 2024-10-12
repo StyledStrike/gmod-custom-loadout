@@ -467,9 +467,11 @@ function CLoadout:UpdateAvailableList()
 
     self.listAvailable:InvalidateLayout( true )
 
-    -- This has to be done to prevent a glitch
+    -- This needs to be called next frame, otherwise it can cause a glitch
     timer.Simple( 0, function()
-        self.scrollAvailable:InvalidateLayout()
+        if IsValid( self.scrollAvailable ) then
+            self.scrollAvailable:InvalidateLayout()
+        end
     end )
 end
 
