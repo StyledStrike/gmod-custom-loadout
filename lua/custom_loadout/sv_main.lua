@@ -8,7 +8,7 @@ CLoadout.cache = {}
 -- safe guard against spam
 CLoadout.cooldown = {}
 CLoadout.spamCount = {}
-CLoadout.maxLength = 8192
+CLoadout.MAX_JSON_LENGTH = 8192
 
 function CLoadout:IsAvailableForPlayer( ply )
     if not IsValid( ply ) then
@@ -123,19 +123,25 @@ function CLoadout:ReceiveData( len, ply )
         return
     end
 
-    if len > CLoadout.maxLength then
+    self.cooldown[steamId] = t + 1
+    self.spamCount[steamId] = 0
+
+    if len > CLoadout.MAX_JSON_LENGTH then
         CLoadout.PrintF( "%s <%s> has sent loadout data that was too big!", ply:Nick(), steamId )
 
         return
     end
 
-    self.cooldown[steamId] = t + 1
-    self.spamCount[steamId] = 0
-
     local data = net.ReadData( len )
     data = util.Decompress( data )
 
     if not data or data == "" then return end
+
+    if #data > CLoadout.MAX_JSON_LENGTH then
+        CLoadout.PrintF( "%s <%s> has sent loadout JSON that was too big!", ply:Nick(), steamId )
+
+        return
+    end
 
     local loadout = util.JSONToTable( data )
 
