@@ -19,7 +19,7 @@ function CLoadout:IsAvailableForPlayer( ply )
     if ply.GetBuild and ply:GetBuild() then
         return false, "Your loadout will be applied once you leave build mode."
     end
-        
+
     local canuse, reason = hook.Run( "CLoadoutCanGiveWeapons", ply )
 
     if canuse == false then
