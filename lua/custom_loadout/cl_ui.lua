@@ -27,6 +27,12 @@ function CLoadout:GetWeaponIcon( class )
     if file.Exists( "materials/vgui/entities/" .. class .. ".vmt", "GAME" ) then
         return "vgui/entities/" .. class
     end
+
+    local swep = weapons.Get( class )
+
+    if swep and swep.IconOverride then
+        return swep.IconOverride
+    end
 end
 
 function CLoadout:UpdateLists()
