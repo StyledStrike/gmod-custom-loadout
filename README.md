@@ -17,6 +17,8 @@ A loadout customization addon for Garry's Mod.
 
 ### Developer Notes
 
+#### `CustomLoadout.IsWeaponBlacklisted`
+
 If you want to blacklist weapons, you can either install and use URS/WUMA, or copy the example hook below and modify it as you wish.
 
 ```lua
@@ -34,6 +36,8 @@ Returning `true` prevents the weapon from being given, and also marks them as un
 * The hook must be added on a shared realm (both on _CLIENT_ and _SERVER_)
 * It doesn't work in single player _(so if you need to test it, do it on a local, peer-to-peer or dedicated server instead.)_
 
+#### `CLoadoutOverridePreferredWeapon`
+
 You can also override which weapon is preferred by using this hook:
 
 ```lua
@@ -49,6 +53,22 @@ hook.Add( "CLoadoutOverridePreferredWeapon", "OverridePreferredWeaponExample", f
     ply:SelectWeapon( "weapon_physgun" )
 
     return false
+end )
+```
+
+#### `CLoadoutCanGiveWeapons`
+
+You can block a player from changing their loadout by using the `CLoadoutCanGiveWeapons` hook. It gives a `isManualChange` argument, which is `true` if the player changed the loadout using the loadout UI, and `false` if the loadout is being given by gamemode events (such as respawning).
+
+```lua
+hook.Add( "CLoadoutCanGiveWeapons", "BlockLoadoutExample", function( ply, isManualChange )
+    -- Don't allow players to manually change the loadout while
+    -- they are on a "PvP mode", to prevent reloading all weapons.
+    if isManualChange and ply:IsOnPVPMode() then
+        -- You can also return a second string value
+        -- as a message to print to the player's chat.
+        return false, "Your loadout will apply on the next time you respawn."
+    end
 end )
 ```
 

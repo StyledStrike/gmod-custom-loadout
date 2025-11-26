@@ -10,7 +10,7 @@ CLoadout.cooldown = {}
 CLoadout.spamCount = {}
 CLoadout.MAX_JSON_LENGTH = 8192
 
-function CLoadout:IsAvailableForPlayer( ply )
+function CLoadout:IsAvailableForPlayer( ply, isManualChange )
     if not IsValid( ply ) then
         return false
     end
@@ -20,9 +20,9 @@ function CLoadout:IsAvailableForPlayer( ply )
         return false, "Your loadout will be applied once you leave build mode."
     end
 
-    local canuse, reason = hook.Run( "CLoadoutCanGiveWeapons", ply )
+    local canUse, reason = hook.Run( "CLoadoutCanGiveWeapons", ply, isManualChange == true )
 
-    if canuse == false then
+    if canUse == false then
         return false, reason
     end
 
@@ -102,7 +102,9 @@ function CLoadout:Apply( ply )
 
     -- a timer is used here just to override other addon's shenanigans
     if self.cache[steamId] and self.cache[steamId].enabled then
-        timer.Simple( 0.1, function() CLoadout:GiveWeapons( ply ) end )
+        timer.Simple( 0.1, function()
+            CLoadout:GiveWeapons( ply )
+        end )
 
         return true
     end
@@ -184,7 +186,7 @@ function CLoadout:ReceiveData( len, ply )
         end
     end
 
-    local canUse, reason = self:IsAvailableForPlayer( ply )
+    local canUse, reason = self:IsAvailableForPlayer( ply, true )
 
     if reason then
         ply:ChatPrint( "[Custom Loadout] " .. reason )
