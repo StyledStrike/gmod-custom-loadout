@@ -30,7 +30,7 @@ function CLoadout:IsAvailableForPlayer( ply, isManualChange )
 end
 
 function CLoadout:GiveWeapons( ply )
-    if not IsValid( ply ) or ply:Health() <= 0 then return end
+    if not IsValid( ply ) or not ply:Alive() then return end
 
     ply:StripWeapons()
 
@@ -43,12 +43,13 @@ function CLoadout:GiveWeapons( ply )
 
     local maxPrimary = GetConVar( "custom_loadout_primary_limit" ):GetInt()
     local maxSecondary = GetConVar( "custom_loadout_secondary_limit" ):GetInt()
-
     hook.Run( "CLoadoutPreGiveWeapons", ply, items )
-    local preferredWeapon = "weapon_physgun"
+
+    local preferredWeapon = ply:GetInfo( "cl_defaultweapon" )
+    local weapons = list.Get( "Weapon" )
 
     for _, item in ipairs( items ) do
-        local swep = list.Get( "Weapon" )[item[1]]
+        local swep = weapons[item[1]]
         if not swep then continue end
 
         -- dont give admin-only weapons if ply is not a admin (duh)
@@ -59,9 +60,9 @@ function CLoadout:GiveWeapons( ply )
 
         if self:IsBlacklisted( ply, item[1] ) then continue end
 
-        local success, weapon = pcall( ply.Give, ply, swep.ClassName )
+        local weapon = ply:Give( swep.ClassName )
 
-        if success and IsValid( weapon ) then
+        if IsValid( weapon ) then
             -- give ammo
             local primaryAmount = math.Clamp( item[2], 0, maxPrimary )
             local secondaryAmount = math.Clamp( item[3], 0, maxSecondary )
@@ -85,7 +86,6 @@ function CLoadout:GiveWeapons( ply )
 
     if type( preferredOverride ) == "string" then
         preferredWeapon = preferredOverride
-
     elseif preferredOverride == false then
         preferredWeapon = nil
     end
