@@ -13,6 +13,11 @@ function CLoadout:InitRegistry()
 
         categories[cat] = true
 
+        if cat == "Other" then
+            cat = "#spawnmenu.category.other"
+        end
+
+
         registry[v.ClassName] = {
             adminOnly = v.AdminOnly,
             name = ( v.PrintName and v.PrintName ~= "" ) and v.PrintName or v.ClassName,
